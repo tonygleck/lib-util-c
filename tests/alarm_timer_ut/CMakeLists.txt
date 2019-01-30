@@ -9,12 +9,10 @@ set(${theseTestsName}_test_files
 )
 
 set(${theseTestsName}_c_files
-    src/alarm_timer.c
+    ../../src/alarm_timer.c
 )
 
 set(${theseTestsName}_h_files
 )
 
-build_c_test_artifacts(${theseTestsName} ON "tests/lib_utils_tests")
-
-compile_c_test_artifacts_as(${theseTestsName} C99)
+build_test_project(${theseTestsName} "tests/lib_utils_tests")

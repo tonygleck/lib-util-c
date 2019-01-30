@@ -20,22 +20,8 @@ ALARM_TIMER_HANDLE alarm_timer_create(size_t expire_sec)
     }
     else
     {
+        result->expire_sec = expire_sec*1000;
         result->start_time = time(NULL);
-    }
-    return result;
-}
-
-bool alarm_timer_is_expired(ALARM_TIMER_HANDLE handle)
-{
-    bool result;
-    if (handle != NULL)
-    {
-        double time_diff = difftime(handle->start_time, time(NULL) );
-        result = ((size_t)time_diff > handle->expire_sec);
-    }
-    else
-    {
-        result = true;
     }
     return result;
 }
@@ -46,4 +32,21 @@ void alarm_timer_destroy(ALARM_TIMER_HANDLE handle)
     {
         free(handle);
     }
+}
+
+bool alarm_timer_is_expired(ALARM_TIMER_HANDLE handle)
+{
+    bool result;
+    if (handle != NULL)
+    {
+        time_t curr_time = time(NULL);
+        double time_diff = difftime(handle->start_time, curr_time);
+        printf("time_diff: %u > %u\r\n", (unsigned int)time_diff, (unsigned int)handle->expire_sec);
+        result = ((size_t)time_diff > handle->expire_sec);
+    }
+    else
+    {
+        result = true;
+    }
+    return result;
 }

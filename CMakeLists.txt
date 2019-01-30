@@ -1,3 +1,5 @@
+#Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
 cmake_minimum_required(VERSION 2.8.11)
 
 #Use solution folders.
@@ -52,10 +54,10 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
 endif()
 
-include_directories(. inc ./deps)
-
 # Add dependencies
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
+
+include_directories(. inc ./deps ${UMOCK_C_INC_FOLDER})
 
 set(lib_src_files
     src/alarm_timer.c
@@ -69,13 +71,13 @@ add_library(lib-util-c ${lib_src_files} ${lib_header_files})
 
 # Add testing
 if (${include_ut})
-    include("cmake_configs/proj_test.cmake")
+    include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
 
     if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher/CMakeLists.txt")
-        execute_process(COMMAND git clone https://github.com/Azure/azure-c-testrunnerswitcher.git -q --no-tags -b ${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
+        execute_process(COMMAND git clone https://github.com/Azure/azure-c-testrunnerswitcher.git -q --no-tags ${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
     endif()
     if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest/CMakeLists.txt")
-        execute_process(COMMAND git clone https://github.com/Azure/azure-ctest.git -q --no-tags -b ${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
+        execute_process(COMMAND git clone https://github.com/Azure/azure-ctest.git -q --no-tags ${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
     endif()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
