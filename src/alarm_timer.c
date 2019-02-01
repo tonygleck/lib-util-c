@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include "alarm_timer.h"
+#include "lib-util-c/alarm_timer.h"
 
 typedef struct ALARM_TIMER_INFO_TAG
 {
@@ -11,7 +11,7 @@ typedef struct ALARM_TIMER_INFO_TAG
     time_t start_time;
 } ALARM_TIMER_INFO;
 
-ALARM_TIMER_HANDLE alarm_timer_create(size_t expire_sec)
+ALARM_TIMER_HANDLE alarm_timer_create(void)
 {
     ALARM_TIMER_INFO* result = (ALARM_TIMER_INFO*)malloc(sizeof(ALARM_TIMER_INFO));
     if (result == NULL)
@@ -20,7 +20,7 @@ ALARM_TIMER_HANDLE alarm_timer_create(size_t expire_sec)
     }
     else
     {
-        result->expire_sec = expire_sec*1000;
+        result->expire_sec = 0;
         result->start_time = time(NULL);
     }
     return result;
@@ -31,6 +31,30 @@ void alarm_timer_destroy(ALARM_TIMER_HANDLE handle)
     if (handle != NULL)
     {
         free(handle);
+    }
+}
+
+int alarm_timer_start(ALARM_TIMER_HANDLE handle, size_t expire_sec)
+{
+    int result;
+    if (handle == NULL)
+    {
+        printf("Timer handle is NULL");
+    }
+    else
+    {
+        handle->expire_sec = expire_sec*1000;
+        handle->start_time = time(NULL);
+        result = 0;
+    }
+    return result;
+}
+
+void alarm_timer_reset(ALARM_TIMER_HANDLE handle)
+{
+    if (handle != NULL)
+    {
+        handle->start_time = time(NULL);
     }
 }
 

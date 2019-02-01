@@ -41,7 +41,7 @@ void my_gballoc_free(void* ptr)
 //#include "azure_c_shared_utility/gballoc.h"
 #undef ENABLE_MOCKS
 
-#include "alarm_timer.h"
+#include "lib-util-c/alarm_timer.h"
 
 
 DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
@@ -106,10 +106,9 @@ BEGIN_TEST_SUITE(alarm_timer_ut)
     {
         // arrange
         ALARM_TIMER_HANDLE result;
-        size_t expire_time = 3;
 
         // act
-        result = alarm_timer_create(expire_time);
+        result = alarm_timer_create();
 
         // assert
         ASSERT_IS_NOT_NULL(result);
@@ -122,8 +121,7 @@ BEGIN_TEST_SUITE(alarm_timer_ut)
     TEST_FUNCTION(alarm_timer_destroy_succeed)
     {
         // arrange
-        size_t expire_time = 10;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create(expire_time);
+        ALARM_TIMER_HANDLE handle = alarm_timer_create();
         umock_c_reset_all_calls();
 
         // act
@@ -148,11 +146,80 @@ BEGIN_TEST_SUITE(alarm_timer_ut)
         // cleanup
     }
 
+    TEST_FUNCTION(alarm_timer_start_handle_NULL_succeed)
+    {
+        // arrange
+        size_t expire_time = 10;
+        umock_c_reset_all_calls();
+
+        // act
+        int result = alarm_timer_start(NULL, expire_time);
+
+        // assert
+        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+        // cleanup
+    }
+
+    TEST_FUNCTION(alarm_timer_start_succeed)
+    {
+        // arrange
+        size_t expire_time = 10;
+        ALARM_TIMER_HANDLE handle = alarm_timer_create();
+        umock_c_reset_all_calls();
+
+        // act
+        int result = alarm_timer_start(handle, expire_time);
+
+        // assert
+        ASSERT_ARE_EQUAL(int, 0, result);
+        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+        // cleanup
+        alarm_timer_destroy(handle);
+    }
+
+    TEST_FUNCTION(alarm_timer_reset_handle_NULL_succeed)
+    {
+        // arrange
+
+        // act
+        alarm_timer_reset(NULL);
+
+        // assert
+        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+        // cleanup
+    }
+
+    TEST_FUNCTION(alarm_timer_reset_succeed)
+    {
+        // arrange
+        size_t expire_time = 1;
+        ALARM_TIMER_HANDLE handle = alarm_timer_create();
+        alarm_timer_start(handle, expire_time);
+        umock_c_reset_all_calls();
+
+        // act
+        sleep_for_now((expire_time*2)*500);
+        alarm_timer_reset(handle);
+        bool result = alarm_timer_is_expired(handle);
+
+        // assert
+        ASSERT_IS_FALSE(result);
+        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+        // cleanup
+        alarm_timer_destroy(handle);
+    }
+
     TEST_FUNCTION(alarm_timer_is_expired_false_succeed)
     {
         // arrange
         size_t expire_time = 10;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create(expire_time);
+        ALARM_TIMER_HANDLE handle = alarm_timer_create();
+        alarm_timer_start(handle, expire_time);
         umock_c_reset_all_calls();
 
         // act
@@ -170,7 +237,8 @@ BEGIN_TEST_SUITE(alarm_timer_ut)
     {
         // arrange
         size_t expire_time = 1;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create(expire_time);
+        ALARM_TIMER_HANDLE handle = alarm_timer_create();
+        alarm_timer_start(handle, expire_time);
         umock_c_reset_all_calls();
 
         // act
