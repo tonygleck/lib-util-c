@@ -64,7 +64,7 @@ set(lib_src_files
 )
 
 set(lib_header_files
-    inc/alarm_timer.h
+    inc/lib-util-c/alarm_timer.h
 )
 
 add_library(lib-util-c ${lib_src_files} ${lib_header_files})
