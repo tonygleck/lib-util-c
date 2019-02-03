@@ -15,7 +15,6 @@ option(include_ut "Include unittest in build" OFF)
 enable_testing()
 
 #include("cmake_configs/proj_config.cmake")
-
 #if (MSVC)
 #    detect_architecture("_M_AMD64" x86_64)
 #    detect_architecture("_M_IX86" x86)
@@ -56,8 +55,7 @@ endif()
 
 # Add dependencies
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
-
-include_directories(. inc ./deps ${UMOCK_C_INC_FOLDER})
+include_directories(${UMOCK_C_INC_FOLDER})
 
 set(lib_src_files
     src/alarm_timer.c
@@ -66,6 +64,8 @@ set(lib_src_files
 set(lib_header_files
     inc/lib-util-c/alarm_timer.h
 )
+
+include_directories(./inc)
 
 add_library(lib-util-c ${lib_src_files} ${lib_header_files})
 
