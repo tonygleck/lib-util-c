@@ -65,7 +65,6 @@ bool alarm_timer_is_expired(ALARM_TIMER_HANDLE handle)
     {
         time_t curr_time = time(NULL);
         double time_diff = difftime(handle->start_time, curr_time);
-        printf("time_diff: %u > %u\r\n", (unsigned int)time_diff, (unsigned int)handle->expire_sec);
         result = ((size_t)time_diff > handle->expire_sec);
     }
     else
