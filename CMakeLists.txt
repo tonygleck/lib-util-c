@@ -59,10 +59,12 @@ include_directories(${UMOCK_C_INC_FOLDER})
 
 set(lib_src_files
     src/alarm_timer.c
+    src/item_list.c
 )
 
 set(lib_header_files
     inc/lib-util-c/alarm_timer.h
+    inc/lib-util-c/item_list.h
 )
 
 include_directories(./inc)
