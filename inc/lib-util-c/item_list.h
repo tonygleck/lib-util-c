@@ -13,7 +13,9 @@ extern "C" {
 
 typedef struct ITEM_LIST_INFO_TAG* ITEM_LIST_HANDLE;
 
-MOCKABLE_FUNCTION(, ITEM_LIST_HANDLE, item_list_create);
+typedef void(*ITEM_LIST_DESTROY_ITEM)(void* user_ctx, void* remove_item);
+
+MOCKABLE_FUNCTION(, ITEM_LIST_HANDLE, item_list_create, ITEM_LIST_DESTROY_ITEM, destroy_cb, void*, user_ctx);
 MOCKABLE_FUNCTION(, void, item_list_destroy, ITEM_LIST_HANDLE, handle);
 
 MOCKABLE_FUNCTION(, int, item_list_add_item, ITEM_LIST_HANDLE, handle, void*, item);

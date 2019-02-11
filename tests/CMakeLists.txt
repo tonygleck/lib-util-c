@@ -3,3 +3,4 @@
 cmake_minimum_required(VERSION 2.8.12)
 
 add_subdirectory(alarm_timer_ut)
+add_subdirectory(item_list_ut)

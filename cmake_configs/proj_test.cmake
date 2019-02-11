@@ -10,11 +10,10 @@ function(build_test_project whatIsBuilding folder)
         #windows needs this define
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-        add_executable(${whatIsBuilding}
-            ${${whatIsBuilding}_cpp_files}
-            ${${whatIsBuilding}_h_files}
-            #../../testtools/inc/catch.hpp
-        )
+        #add_executable(${whatIsBuilding}
+        #    ${${whatIsBuilding}_cpp_files}
+        #    ${${whatIsBuilding}_h_files}
+        #)
         set_target_properties(${whatIsBuilding} PROPERTIES LINKER_LANGUAGE CXX)
         set_target_properties(${whatIsBuilding} PROPERTIES FOLDER ${folder})
     endif()
