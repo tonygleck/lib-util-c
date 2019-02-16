@@ -22,6 +22,7 @@ MOCKABLE_FUNCTION(, int, item_list_add_item, ITEM_LIST_HANDLE, handle, void*, it
 MOCKABLE_FUNCTION(, int, item_list_add_copy, ITEM_LIST_HANDLE, handle, const void*, item, size_t, item_size);
 MOCKABLE_FUNCTION(, int, item_list_remove_item, ITEM_LIST_HANDLE, handle, size_t, index);
 MOCKABLE_FUNCTION(, size_t, item_list_item_count, ITEM_LIST_HANDLE, handle);
+MOCKABLE_FUNCTION(, const void*, item_list_get_item, ITEM_LIST_HANDLE, handle, size_t, item_index);
 
 #ifdef __cplusplus
 }

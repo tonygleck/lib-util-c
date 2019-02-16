@@ -58,11 +58,13 @@ add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
 include_directories(${UMOCK_C_INC_FOLDER})
 
 set(lib_src_files
+    src/app_logging.c
     src/alarm_timer.c
     src/item_list.c
 )
 
 set(lib_header_files
+    inc/lib-util-c/app_logging.h
     inc/lib-util-c/alarm_timer.h
     inc/lib-util-c/item_list.h
 )
@@ -73,6 +75,8 @@ add_library(lib-util-c ${lib_src_files} ${lib_header_files})
 
 # Add testing
 if (${include_ut})
+    set(logging_files ${CMAKE_CURRENT_LIST_DIR}/src/app_logging.c)
+
     include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
 
     if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher/CMakeLists.txt")
