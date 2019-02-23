@@ -1,6 +1,9 @@
+#Copyright (c) Microsoft. All rights reserved.
 #Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 cmake_minimum_required(VERSION 2.8.11)
+
+compileAsC11()
 
 set(theseTestsName item_list_ut)
 
@@ -14,8 +17,5 @@ set(${theseTestsName}_c_files
 
 set(${theseTestsName}_h_files
 )
-
-#SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -E")
-#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -E -dM")
 
 build_test_project(${theseTestsName} "tests/lib_utils_tests")

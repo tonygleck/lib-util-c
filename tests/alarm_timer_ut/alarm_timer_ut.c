@@ -38,7 +38,7 @@ void my_gballoc_free(void* ptr)
 #include "umock_c_negative_tests.h"
 
 #define ENABLE_MOCKS
-//#include "azure_c_shared_utility/gballoc.h"
+#include "azure_c_shared_utility/gballoc.h"
 #undef ENABLE_MOCKS
 
 #include "lib-util-c/alarm_timer.h"
@@ -66,205 +66,209 @@ static void sleep_for_now(unsigned int milliseconds)
 
 BEGIN_TEST_SUITE(alarm_timer_ut)
 
-    TEST_SUITE_INITIALIZE(a)
+TEST_SUITE_INITIALIZE(a)
+{
+    int result;
+    g_testByTest = TEST_MUTEX_CREATE();
+    ASSERT_IS_NOT_NULL(g_testByTest);
+
+    (void)umock_c_init(on_umock_c_error);
+
+    result = umocktypes_charptr_register_types();
+    ASSERT_ARE_EQUAL(int, 0, result);
+
+    REGISTER_UMOCK_ALIAS_TYPE(ALARM_TIMER_HANDLE, void*);
+
+    REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
+    REGISTER_GLOBAL_MOCK_FAIL_RETURN(gballoc_malloc, NULL);
+    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);
+}
+
+TEST_SUITE_CLEANUP(suite_cleanup)
+{
+    umock_c_deinit();
+
+    TEST_MUTEX_DESTROY(g_testByTest);
+}
+
+TEST_FUNCTION_INITIALIZE(method_init)
+{
+    if (TEST_MUTEX_ACQUIRE(g_testByTest))
     {
-        int result;
-        g_testByTest = TEST_MUTEX_CREATE();
-        ASSERT_IS_NOT_NULL(g_testByTest);
-
-        (void)umock_c_init(on_umock_c_error);
-
-        result = umocktypes_charptr_register_types();
-        ASSERT_ARE_EQUAL(int, 0, result);
-
-        REGISTER_UMOCK_ALIAS_TYPE(ALARM_TIMER_HANDLE, void*);
+        ASSERT_FAIL("Could not acquire test serialization mutex.");
     }
 
-    TEST_SUITE_CLEANUP(suite_cleanup)
-    {
-        umock_c_deinit();
+    umock_c_reset_all_calls();
+}
 
-        TEST_MUTEX_DESTROY(g_testByTest);
-    }
+TEST_FUNCTION_CLEANUP(method_cleanup)
+{
+    TEST_MUTEX_RELEASE(g_testByTest);
+}
 
-    TEST_FUNCTION_INITIALIZE(method_init)
-    {
-        if (TEST_MUTEX_ACQUIRE(g_testByTest))
-        {
-            ASSERT_FAIL("Could not acquire test serialization mutex.");
-        }
+TEST_FUNCTION(alarm_timer_create_succeed)
+{
+    // arrange
+    ALARM_TIMER_HANDLE result;
 
-        umock_c_reset_all_calls();
-    }
+    // act
+    result = alarm_timer_create();
 
-    TEST_FUNCTION_CLEANUP(method_cleanup)
-    {
-        TEST_MUTEX_RELEASE(g_testByTest);
-    }
+    // assert
+    ASSERT_IS_NOT_NULL(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_create_succeed)
-    {
-        // arrange
-        ALARM_TIMER_HANDLE result;
+    // cleanup
+    alarm_timer_destroy(result);
+}
 
-        // act
-        result = alarm_timer_create();
+TEST_FUNCTION(alarm_timer_destroy_succeed)
+{
+    // arrange
+    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    umock_c_reset_all_calls();
 
-        // assert
-        ASSERT_IS_NOT_NULL(result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    alarm_timer_destroy(handle);
 
-        // cleanup
-        alarm_timer_destroy(result);
-    }
+    // assert
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_destroy_succeed)
-    {
-        // arrange
-        ALARM_TIMER_HANDLE handle = alarm_timer_create();
-        umock_c_reset_all_calls();
+    // cleanup
+}
 
-        // act
-        alarm_timer_destroy(handle);
+TEST_FUNCTION(alarm_timer_destroy_NULL_succeed)
+{
+    // arrange
 
-        // assert
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    alarm_timer_destroy(NULL);
 
-        // cleanup
-    }
+    // assert
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_destroy_NULL_succeed)
-    {
-        // arrange
+    // cleanup
+}
 
-        // act
-        alarm_timer_destroy(NULL);
+TEST_FUNCTION(alarm_timer_start_handle_NULL_succeed)
+{
+    // arrange
+    size_t expire_time = 10;
+    umock_c_reset_all_calls();
 
-        // assert
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    int result = alarm_timer_start(NULL, expire_time);
 
-        // cleanup
-    }
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_start_handle_NULL_succeed)
-    {
-        // arrange
-        size_t expire_time = 10;
-        umock_c_reset_all_calls();
+    // cleanup
+}
 
-        // act
-        int result = alarm_timer_start(NULL, expire_time);
+TEST_FUNCTION(alarm_timer_start_succeed)
+{
+    // arrange
+    size_t expire_time = 10;
+    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    umock_c_reset_all_calls();
 
-        // assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    int result = alarm_timer_start(handle, expire_time);
 
-        // cleanup
-    }
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_start_succeed)
-    {
-        // arrange
-        size_t expire_time = 10;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create();
-        umock_c_reset_all_calls();
+    // cleanup
+    alarm_timer_destroy(handle);
+}
 
-        // act
-        int result = alarm_timer_start(handle, expire_time);
+TEST_FUNCTION(alarm_timer_reset_handle_NULL_succeed)
+{
+    // arrange
 
-        // assert
-        ASSERT_ARE_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    alarm_timer_reset(NULL);
 
-        // cleanup
-        alarm_timer_destroy(handle);
-    }
+    // assert
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_reset_handle_NULL_succeed)
-    {
-        // arrange
+    // cleanup
+}
 
-        // act
-        alarm_timer_reset(NULL);
+TEST_FUNCTION(alarm_timer_reset_succeed)
+{
+    // arrange
+    size_t expire_time = 1;
+    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    alarm_timer_start(handle, expire_time);
+    umock_c_reset_all_calls();
 
-        // assert
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    sleep_for_now((expire_time*2)*500);
+    alarm_timer_reset(handle);
+    bool result = alarm_timer_is_expired(handle);
 
-        // cleanup
-    }
+    // assert
+    ASSERT_IS_FALSE(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_reset_succeed)
-    {
-        // arrange
-        size_t expire_time = 1;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create();
-        alarm_timer_start(handle, expire_time);
-        umock_c_reset_all_calls();
+    // cleanup
+    alarm_timer_destroy(handle);
+}
 
-        // act
-        sleep_for_now((expire_time*2)*500);
-        alarm_timer_reset(handle);
-        bool result = alarm_timer_is_expired(handle);
+TEST_FUNCTION(alarm_timer_is_expired_false_succeed)
+{
+    // arrange
+    size_t expire_time = 10;
+    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    alarm_timer_start(handle, expire_time);
+    umock_c_reset_all_calls();
 
-        // assert
-        ASSERT_IS_FALSE(result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    bool result = alarm_timer_is_expired(handle);
 
-        // cleanup
-        alarm_timer_destroy(handle);
-    }
+    // assert
+    ASSERT_IS_FALSE(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_is_expired_false_succeed)
-    {
-        // arrange
-        size_t expire_time = 10;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create();
-        alarm_timer_start(handle, expire_time);
-        umock_c_reset_all_calls();
+    // cleanup
+    alarm_timer_destroy(handle);
+}
 
-        // act
-        bool result = alarm_timer_is_expired(handle);
+TEST_FUNCTION(alarm_timer_is_expired_true_succeed)
+{
+    // arrange
+    size_t expire_time = 1;
+    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    alarm_timer_start(handle, expire_time);
+    umock_c_reset_all_calls();
 
-        // assert
-        ASSERT_IS_FALSE(result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    sleep_for_now((expire_time*2)*500);
+    bool result = alarm_timer_is_expired(handle);
 
-        // cleanup
-        alarm_timer_destroy(handle);
-    }
+    // assert
+    ASSERT_IS_TRUE(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_is_expired_true_succeed)
-    {
-        // arrange
-        size_t expire_time = 1;
-        ALARM_TIMER_HANDLE handle = alarm_timer_create();
-        alarm_timer_start(handle, expire_time);
-        umock_c_reset_all_calls();
+    // cleanup
+    alarm_timer_destroy(handle);
+}
 
-        // act
-        sleep_for_now((expire_time*2)*500);
-        bool result = alarm_timer_is_expired(handle);
+TEST_FUNCTION(alarm_timer_is_expired_NULL_fail)
+{
+    // arrange
 
-        // assert
-        ASSERT_IS_TRUE(result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // act
+    bool result = alarm_timer_is_expired(NULL);
 
-        // cleanup
-        alarm_timer_destroy(handle);
-    }
+    // assert
+    ASSERT_IS_TRUE(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    TEST_FUNCTION(alarm_timer_is_expired_NULL_fail)
-    {
-        // arrange
-
-        // act
-        bool result = alarm_timer_is_expired(NULL);
-
-        // assert
-        ASSERT_IS_TRUE(result);
-        ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
-
-        // cleanup
-    }
+    // cleanup
+}
 
 END_TEST_SUITE(alarm_timer_ut)
