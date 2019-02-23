@@ -12,8 +12,6 @@ set(PROJECT_INC_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/inc)
 
 option(include_ut "Include unittest in build" OFF)
 
-enable_testing()
-
 #include("cmake_configs/proj_config.cmake")
 #if (MSVC)
 #    detect_architecture("_M_AMD64" x86_64)
@@ -43,6 +41,7 @@ if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
     add_definitions(/WX)
 
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     #set_source_files_properties(bandit/bandit/external/optionparser.h PROPERTIES COMPILE_FLAGS "/wd4701 /wd4703")
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     # Update if necessary
@@ -54,7 +53,9 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # Add dependencies
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
+if (NOT TARGET umock_c)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
+endif()
 include_directories(${UMOCK_C_INC_FOLDER})
 
 set(lib_src_files
@@ -75,15 +76,17 @@ add_library(lib-util-c ${lib_src_files} ${lib_header_files})
 
 # Add testing
 if (${include_ut})
+    enable_testing()
+    
     set(logging_files ${CMAKE_CURRENT_LIST_DIR}/src/app_logging.c)
 
     include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
 
     if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher/CMakeLists.txt")
-        execute_process(COMMAND git clone https://github.com/Azure/azure-c-testrunnerswitcher.git -q --no-tags ${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
+        execute_process(COMMAND git clone https://github.com/Azure/azure-c-testrunnerswitcher.git -q ${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
     endif()
     if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest/CMakeLists.txt")
-        execute_process(COMMAND git clone https://github.com/Azure/azure-ctest.git -q --no-tags ${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
+        execute_process(COMMAND git clone https://github.com/Azure/azure-ctest.git -q ${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
     endif()
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
