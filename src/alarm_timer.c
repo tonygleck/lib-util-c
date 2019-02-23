@@ -40,6 +40,7 @@ int alarm_timer_start(ALARM_TIMER_HANDLE handle, size_t expire_sec)
     if (handle == NULL)
     {
         printf("Timer handle is NULL");
+        result = __LINE__;
     }
     else
     {

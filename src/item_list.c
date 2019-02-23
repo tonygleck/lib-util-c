@@ -124,6 +124,7 @@ int item_list_add_copy(ITEM_LIST_HANDLE handle, const void* item, size_t item_si
         {
             memcpy(new_item, item, item_size);
             add_new_item(handle, new_item, true);
+            result = 0;
         }
     }
     return result;
@@ -206,7 +207,7 @@ const void* item_list_get_item(ITEM_LIST_HANDLE handle, size_t item_index)
     else
     {
         ITEM_NODE* pos = handle->head_node;
-        ITEM_NODE* prev_item = NULL;
+        //ITEM_NODE* prev_item = NULL;
 
         for (size_t index = 0; index < handle->item_count; index++)
         {
