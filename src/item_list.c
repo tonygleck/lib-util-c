@@ -88,7 +88,7 @@ void item_list_destroy(ITEM_LIST_HANDLE handle)
     }
 }
 
-int item_list_add_item(ITEM_LIST_HANDLE handle, void* item)
+int item_list_add_item(ITEM_LIST_HANDLE handle, const void* item)
 {
     int result;
     if (handle == NULL)

@@ -2,8 +2,12 @@
 
 #ifdef __cplusplus
 #include <cstdlib>
+#include <cstddef>
+#include <ctime>
 #else
 #include <stdlib.h>
+#include <stddef.h>
+#include <time.h>
 #endif
 
 void* my_gballoc_malloc(size_t size)
@@ -21,13 +25,6 @@ void my_gballoc_free(void* ptr)
     free(ptr);
 }
 
-#ifdef __cplusplus
-#include <cstddef>
-#include <ctime>
-#else
-#include <stddef.h>
-#include <time.h>
-#endif
 
 /**
  * Include the test tools.
@@ -37,13 +34,13 @@ void my_gballoc_free(void* ptr)
 #include "umocktypes_charptr.h"
 #include "umock_c_negative_tests.h"
 
+#include "lib-util-c/item_list.h"
+
 #define ENABLE_MOCKS
 //#include "azure_c_shared_utility/gballoc.h"
 
 MOCKABLE_FUNCTION(, void, item_destroy_callback, void*, user_ctx, void*, item);
 #undef ENABLE_MOCKS
-
-#include "lib-util-c/item_list.h"
 
 static unsigned char TEST_ITEM_1[] = { 0x01, 0x02, 0x03, 0x04, 0x05 };
 static unsigned char TEST_ITEM_2[] = { 0x02, 0x03, 0x04, 0x05, 0x06 };
@@ -56,7 +53,6 @@ static size_t TEST_ITEM_SIZE = 5;
 
 static void my_item_destroy_cb(void* user_ctx, void* item)
 {
-
 }
 
 DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
@@ -82,7 +78,7 @@ BEGIN_TEST_SUITE(item_list_ut)
 
         REGISTER_UMOCK_ALIAS_TYPE(ITEM_LIST_HANDLE, void*);
 
-        //REGISTER_GLOBAL_MOCK_HOOK(item_destroy_callback, my_item_destroy_cb);
+        REGISTER_GLOBAL_MOCK_HOOK(item_destroy_callback, my_item_destroy_cb);
     }
 
     TEST_SUITE_CLEANUP(suite_cleanup)
