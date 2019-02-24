@@ -11,12 +11,11 @@ project(lib-util-c)
 #set(PROJECT_INC_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/inc)
 #set(TEST_INC_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/test/inc)
 
-#option(include_ut "Include unittest in build" OFF)
-option(run_unittests "set run_unittests to ON to run unittests (default is OFF)" OFF)
+option(include_ut "Include unittest in build" OFF)
+#option(run_unittests "set run_unittests to ON to run unittests (default is OFF)" OFF)
 
 # do not add or build any tests of the dependencies
-set(original_run_e2e_tests ${run_e2e_tests})
-set(original_run_unittests ${run_unittests})
+set(original_include_ut ${include_ut})
 
 set(run_e2e_tests OFF)
 set(run_unittests OFF)
@@ -32,12 +31,14 @@ include_directories(${UMOCK_C_INC_FOLDER})
 
 if (NOT TARGET aziotsharedutil)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/c-utility)
+    set_platform_files(${CMAKE_CURRENT_LIST_DIR}/deps/c-utility)
 endif()
 include_directories(${SHARED_UTIL_INC_FOLDER})
-set_platform_files(${CMAKE_CURRENT_LIST_DIR}/deps/c-utility)
+
+set(include_ut ${original_include_ut})
 
 # Add testing
-if ("${original_run_e2e_tests}" OR "${original_run_unittests}")
+if (${include_ut})
     enable_testing()
 
     set(logging_files ${CMAKE_CURRENT_LIST_DIR}/src/app_logging.c)
@@ -52,8 +53,6 @@ if ("${original_run_e2e_tests}" OR "${original_run_unittests}")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
 endif()
 
-set(run_e2e_tests ${original_run_e2e_tests})
-set(run_unittests ${original_run_unittests})
 
 set(lib_src_files
     src/app_logging.c

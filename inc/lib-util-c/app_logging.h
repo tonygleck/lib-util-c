@@ -30,7 +30,7 @@ typedef enum log_category_tag
 
 typedef void(*APP_LOG_FN)(log_category category, const char* file, const char* func, int line, unsigned int options, const char* format, ...);
 
-#define LOG(log_category, log_option, format, ...) \
+#define LOG_MSG(log_category, log_option, format, ...) \
 { \
     if (0) { (void)printf(format, ##__VA_ARGS__); } \
     { \
@@ -39,11 +39,11 @@ typedef void(*APP_LOG_FN)(log_category category, const char* file, const char* f
     } \
 }
 
-#define log_error(FORMAT, ...) do { LOG(log_error, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
-#define log_warning(FORMAT, ...)  do { LOG(log_warning, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
-#define log_info(FORMAT, ...)  do { LOG(log_info, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
-#define log_debug(FORMAT, ...)  do { LOG(log_debug, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
-#define log_trace(FORMAT, ...)  do { LOG(log_trace, 0x00, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
+#define log_error(FORMAT, ...) do { LOG_MSG(log_error, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
+#define log_warning(FORMAT, ...)  do { LOG_MSG(log_warning, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
+#define log_info(FORMAT, ...)  do { LOG_MSG(log_info, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
+#define log_debug(FORMAT, ...)  do { LOG_MSG(log_debug, LOG_LINE, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
+#define log_trace(FORMAT, ...)  do { LOG_MSG(log_trace, 0x00, FORMAT, ##__VA_ARGS__); }while((void)0, 0)
 
 extern void log_set_level(log_category category);
 extern log_category log_get_level(void);

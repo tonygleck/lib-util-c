@@ -1,8 +1,7 @@
-#Copyright (c) Microsoft. All rights reserved.
 #Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 function(add_unittest_directory test_directory)
-    if (${run_unittests})
+    if (${include_ut})
         add_subdirectory(${test_directory})
     endif()
 endfunction()
@@ -20,10 +19,6 @@ function(build_test_project whatIsBuilding folder)
         #windows needs this define
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-        #add_executable(${whatIsBuilding}
-        #    ${${whatIsBuilding}_cpp_files}
-        #    ${${whatIsBuilding}_h_files}
-        #)
         set_target_properties(${whatIsBuilding} PROPERTIES LINKER_LANGUAGE CXX)
         set_target_properties(${whatIsBuilding} PROPERTIES FOLDER ${folder})
     endif()
