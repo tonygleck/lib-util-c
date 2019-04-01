@@ -9,7 +9,7 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
-#include "umock_c_prod.h"
+#include "azure_c_shared_utility/umock_c_prod.h"
 
 typedef struct ALARM_TIMER_INFO_TAG* ALARM_TIMER_HANDLE;
 

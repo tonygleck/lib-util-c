@@ -12,7 +12,7 @@ project(lib-util-c)
 #set(TEST_INC_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/test/inc)
 
 option(include_ut "Include unittest in build" OFF)
-#option(run_unittests "set run_unittests to ON to run unittests (default is OFF)" OFF)
+#option(refresh_submodules "set refresh_submodules to ON to update submodule files (default is OFF)" OFF)
 
 # do not add or build any tests of the dependencies
 set(original_include_ut ${include_ut})
@@ -24,6 +24,11 @@ set(skip_samples ON)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
 
 # Add dependencies
+if (NOT TARGET azure_macro_utils_c)
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/macro-utils)
+endif()
+include_directories(${MACRO_UTILS_INC_FOLDER})
+
 if (NOT TARGET umock_c)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
 endif()

@@ -9,7 +9,7 @@ extern "C" {
 
 #endif
 
-#include "umock_c_prod.h"
+#include "azure_c_shared_utility/umock_c_prod.h"
 
 typedef struct ITEM_LIST_INFO_TAG* ITEM_LIST_HANDLE;
 
