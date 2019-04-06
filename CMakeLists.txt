@@ -7,10 +7,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 project(lib-util-c)
 
-#SET(CMAKE_INCLUDE_CURRENT_DIR ON)
-#set(PROJECT_INC_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/inc)
-#set(TEST_INC_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/test/inc)
-
 option(include_ut "Include unittest in build" OFF)
 #option(refresh_submodules "set refresh_submodules to ON to update submodule files (default is OFF)" OFF)
 
@@ -24,21 +20,15 @@ set(skip_samples ON)
 include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
 
 # Add dependencies
-if (NOT TARGET azure_macro_utils_c)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/macro-utils)
-endif()
-include_directories(${MACRO_UTILS_INC_FOLDER})
-
 if (NOT TARGET umock_c)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/deps/umock-c)
 endif()
 include_directories(${UMOCK_C_INC_FOLDER})
 
-if (NOT TARGET aziotsharedutil)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/c-utility)
-    set_platform_files(${CMAKE_CURRENT_LIST_DIR}/deps/c-utility)
+if (NOT TARGET azure_macro_utils_c)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/azure-macro-utils-c)
 endif()
-include_directories(${SHARED_UTIL_INC_FOLDER})
+include_directories(${MACRO_UTILS_INC_FOLDER})
 
 set(include_ut ${original_include_ut})
 
@@ -57,7 +47,6 @@ if (${include_ut})
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/testrunnerswitcher)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/ctest)
 endif()
-
 
 set(lib_src_files
     src/app_logging.c
