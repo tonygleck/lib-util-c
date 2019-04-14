@@ -25,7 +25,7 @@ if (NOT TARGET umock_c)
 endif()
 include_directories(${UMOCK_C_INC_FOLDER})
 
-if (NOT TARGET azure_macro_utils_c)
+if ((NOT TARGET azure_macro_utils_c) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/azure-macro-utils-c/CMakeLists.txt))
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/azure-macro-utils-c)
 endif()
 include_directories(${MACRO_UTILS_INC_FOLDER})

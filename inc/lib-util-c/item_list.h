@@ -9,7 +9,7 @@ extern "C" {
 
 #endif
 
-#include "umock_c_prod.h"
+#include "umock_c/umock_c_prod.h"
 
 typedef struct ITEM_LIST_INFO_TAG* ITEM_LIST_HANDLE;
 
