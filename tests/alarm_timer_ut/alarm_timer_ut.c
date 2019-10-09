@@ -29,25 +29,25 @@ void my_gballoc_free(void* ptr)
 #include <time.h>
 #endif
 
-/**
- * Include the test tools.
- */
+// Include the test tools.
 #include "testrunnerswitcher.h"
-#include "umock_c.h"
-#include "umocktypes_charptr.h"
-#include "umock_c_negative_tests.h"
+#include "azure_macro_utils/macro_utils.h"
+
+#include "umock_c/umock_c.h"
+#include "umock_c/umocktypes_charptr.h"
+#include "umock_c/umock_c_negative_tests.h"
 
 #define ENABLE_MOCKS
-#include "azure_c_shared_utility/gballoc.h"
+//#include "azure_c_shared_utility/gballoc.h"
 #undef ENABLE_MOCKS
 
 #include "lib-util-c/alarm_timer.h"
 
+MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
-DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    ASSERT_FAIL("umock_c reported error :%s", ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
 static TEST_MUTEX_HANDLE g_testByTest;
@@ -79,9 +79,9 @@ TEST_SUITE_INITIALIZE(a)
 
     REGISTER_UMOCK_ALIAS_TYPE(ALARM_TIMER_HANDLE, void*);
 
-    REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
+    /*REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(gballoc_malloc, NULL);
-    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);
+    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);*/
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)

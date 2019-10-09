@@ -1,7 +1,7 @@
 #Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 function(add_unittest_directory test_directory)
-    if (${include_ut})
+    if (${lib_util_c_ut})
         add_subdirectory(${test_directory})
     endif()
 endfunction()
@@ -31,6 +31,8 @@ function(build_test_project whatIsBuilding folder)
         ${CMAKE_CURRENT_LIST_DIR}/main.c
         ${logging_files}
     )
+
+    compileTargetAsC99(${whatIsBuilding}_exe)
 
     set_target_properties(${whatIsBuilding}_exe
                PROPERTIES

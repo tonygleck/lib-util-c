@@ -9,11 +9,11 @@
 #endif
 
 #include "testrunnerswitcher.h"
-#include "macro_utils.h"
+#include "azure_macro_utils/macro_utils.h"
 
-#include "umock_c.h"
-#include "umock_c_negative_tests.h"
-#include "umocktypes_charptr.h"
+#include "umock_c/umock_c.h"
+#include "umock_c/umock_c_negative_tests.h"
+#include "umock_c/umocktypes_charptr.h"
 
 static void* my_gballoc_malloc(size_t size)
 {
@@ -26,7 +26,7 @@ static void my_gballoc_free(void* ptr)
 }
 
 #define ENABLE_MOCKS
-#include "azure_c_shared_utility/gballoc.h"
+#include "umock_c/umock_c_prod.h"
 
 MOCKABLE_FUNCTION(, void, item_destroy_callback, void*, user_ctx, void*, item);
 #undef ENABLE_MOCKS
@@ -47,13 +47,11 @@ static void my_item_destroy_cb(void* user_ctx, void* item)
 }
 
 static TEST_MUTEX_HANDLE test_serialize_mutex;
-DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
+MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    char temp_str[256];
-    (void)snprintf(temp_str, sizeof(temp_str), "umock_c reported error :%s", ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
-    ASSERT_FAIL(temp_str);
+    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
 BEGIN_TEST_SUITE(item_list_ut)
@@ -69,9 +67,9 @@ TEST_SUITE_INITIALIZE(suite_init)
 
     REGISTER_GLOBAL_MOCK_HOOK(item_destroy_callback, my_item_destroy_cb);
 
-    REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
+    /*REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(gballoc_malloc, NULL);
-    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);
+    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);*/
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)

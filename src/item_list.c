@@ -198,11 +198,11 @@ const void* item_list_get_item(ITEM_LIST_HANDLE handle, size_t item_index)
     const void* result = NULL;
     if (handle == NULL)
     {
-        //log_error("Invalid parameter handle NULL");
+        log_error("Invalid parameter handle NULL");
     }
     else if (item_index >= handle->item_count)
     {
-        //log_error("Invalid index size");
+        log_error("Invalid index size");
     }
     else
     {
