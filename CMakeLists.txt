@@ -29,11 +29,13 @@ set(lib_src_files
     src/app_logging.c
     src/alarm_timer.c
     src/item_list.c
+    src/sys_debug_shim.c
 )
 set(lib_header_files
     inc/lib-util-c/app_logging.h
     inc/lib-util-c/alarm_timer.h
     inc/lib-util-c/item_list.h
+    inc/lib-util-c/sys_debug_shim.h
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
