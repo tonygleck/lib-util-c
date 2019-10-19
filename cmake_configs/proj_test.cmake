@@ -11,6 +11,7 @@ function(build_test_project whatIsBuilding folder)
     add_definitions(-DGB_MEASURE_MEMORY_FOR_THIS -DGB_DEBUG_ALLOC)
 
     set(test_include_dir ${MICROMOCK_INC_FOLDER} ${TESTRUNNERSWITCHER_INC_FOLDER} ${CTEST_INC_FOLDER} ${UMOCK_C_INC_FOLDER})
+    set(logging_files ${CMAKE_SOURCE_DIR}/src/app_logging.c)
     include_directories(${test_include_dir})
 
     if (WIN32)

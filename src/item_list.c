@@ -221,3 +221,22 @@ const void* item_list_get_item(ITEM_LIST_HANDLE handle, size_t item_index)
     }
     return result;
 }
+
+const void* item_list_get_front(ITEM_LIST_HANDLE handle)
+{
+    const void* result;
+    if (handle == NULL)
+    {
+        log_error("Invalid parameter handle NULL");
+        result = NULL;
+    }
+    else if (handle->item_count == 0)
+    {
+        result = NULL;
+    }
+    else
+    {
+        result = handle->head_node->node_item;
+    }
+    return result;
+}

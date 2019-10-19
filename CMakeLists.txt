@@ -47,7 +47,6 @@ compileTargetAsC99(lib-util-c)
 # Add testing
 if (${lib_util_c_ut})
     include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
-    set(logging_files ${CMAKE_CURRENT_LIST_DIR}/src/app_logging.c)
 
     if ((NOT TARGET testrunnerswitcher) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/azure-c-testrunnerswitcher/CMakeLists.txt))
         add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/azure-c-testrunnerswitcher)

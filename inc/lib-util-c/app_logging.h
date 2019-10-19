@@ -5,8 +5,9 @@
 
 #ifdef __cplusplus
 extern "C" {
+#include <cstdio>
 #else
-
+#include <stdio.h>
 #endif
 
 typedef enum log_category_tag
