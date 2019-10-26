@@ -2,14 +2,14 @@
 
 cmake_minimum_required(VERSION 3.2)
 
-set(theseTestsName alarm_timer_ut)
+set(theseTestsName binary_tree_ut)
 
 set(${theseTestsName}_test_files
     ${theseTestsName}.c
 )
 
 set(${theseTestsName}_c_files
-    ../../src/alarm_timer.c
+    ../../src/binary_tree.c
 )
 
 set(${theseTestsName}_h_files

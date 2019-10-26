@@ -39,6 +39,7 @@ static void add_new_item(ITEM_LIST_INFO* list_info, void* item, bool local_alloc
     {
         list_info->tail_node->next = target;
         list_info->tail_node->next->node_item = item;
+        list_info->tail_node->next->locally_allocated = local_alloc;
         list_info->tail_node->next->next = NULL;
         // Set the tail node to the end
         list_info->tail_node = list_info->tail_node->next;

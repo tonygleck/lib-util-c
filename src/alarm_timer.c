@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "lib-util-c/alarm_timer.h"
+#include "lib-util-c/app_logging.h"
 
 typedef struct ALARM_TIMER_INFO_TAG
 {
@@ -18,7 +19,7 @@ ALARM_TIMER_HANDLE alarm_timer_create(void)
     ALARM_TIMER_INFO* result = (ALARM_TIMER_INFO*)malloc(sizeof(ALARM_TIMER_INFO));
     if (result == NULL)
     {
-        printf("Failure allocating timer info");
+        log_error("Failure allocating timer info");
     }
     else
     {
@@ -41,7 +42,7 @@ int alarm_timer_start(ALARM_TIMER_HANDLE handle, size_t expire_sec)
     int result;
     if (handle == NULL)
     {
-        printf("Timer handle is NULL");
+        log_error("Timer handle is NULL");
         result = __LINE__;
     }
     else

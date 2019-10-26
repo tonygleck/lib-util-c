@@ -15,18 +15,19 @@
 #include "umock_c/umock_c_negative_tests.h"
 #include "umock_c/umocktypes_charptr.h"
 
-static void* my_gballoc_malloc(size_t size)
+static void* my_mem_shim_malloc(size_t size)
 {
     return malloc(size);
 }
 
-static void my_gballoc_free(void* ptr)
+static void my_mem_shim_free(void* ptr)
 {
     free(ptr);
 }
 
 #define ENABLE_MOCKS
 #include "umock_c/umock_c_prod.h"
+#include "lib-util-c/sys_debug_shim.h"
 
 MOCKABLE_FUNCTION(, void, item_destroy_callback, void*, user_ctx, void*, item);
 #undef ENABLE_MOCKS
@@ -238,6 +239,7 @@ TEST_FUNCTION(item_list_remove_item_succeed)
     item_list_add_item(handle, TEST_ITEM_1);
     umock_c_reset_all_calls();
 
+    STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
     int result = item_list_remove_item(handle, 0);
 
     // assert

@@ -41,3 +41,23 @@ function(compileTargetAsC11 theTarget)
     set_target_properties(${theTarget} PROPERTIES CXX_STANDARD 11)
   endif()
 endfunction()
+
+# System-specific compiler flags
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    if(WINCE) # Be lax with WEC 2013 compiler
+        add_definitions(-DWIN32) #WEC 2013
+        # Don't treat warning as errors for WEC 2013. WEC 2013 uses older compiler version
+        add_definitions(/WX-)
+    else()
+        # Make warning as error
+        add_definitions(/WX)
+    endif()
+else()
+    # Make warning as error
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
+    if (NOT(IN_OPENWRT OR APPLE))
+        set(CMAKE_C_FLAGS "-D_POSIX_C_SOURCE=200112L ${CMAKE_C_FLAGS}")
+    endif()
+endif()
