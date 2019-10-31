@@ -8,7 +8,7 @@ endfunction()
 
 function(build_test_project whatIsBuilding folder)
 
-    add_definitions(-DGB_MEASURE_MEMORY_FOR_THIS -DGB_DEBUG_ALLOC)
+    add_definitions(-DUSE_MEMORY_DEBUG_SHIM)
 
     set(test_include_dir ${MICROMOCK_INC_FOLDER} ${TESTRUNNERSWITCHER_INC_FOLDER} ${CTEST_INC_FOLDER} ${UMOCK_C_INC_FOLDER})
     set(logging_files ${CMAKE_SOURCE_DIR}/src/app_logging.c)
