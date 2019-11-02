@@ -73,9 +73,9 @@ TEST_SUITE_INITIALIZE(suite_init)
 
     REGISTER_UMOCK_ALIAS_TYPE(BINARY_TREE_HANDLE, void*);
 
-    //REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
-    //REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
-    //REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
+    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
+    REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
+    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)

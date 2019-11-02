@@ -336,4 +336,42 @@ TEST_FUNCTION(item_list_get_item_index_out_of_range_fail)
     item_list_destroy(handle);
 }
 
+TEST_FUNCTION(item_list_clear_handle_NULL_fail)
+{
+    // arrange
+
+    int result = item_list_clear(NULL);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+TEST_FUNCTION(item_list_clear_handle_success)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    size_t item_count = sizeof(TEST_ARRAY)/sizeof(TEST_ARRAY[0]);
+    for (size_t index = 0; index < item_count; index++)
+    {
+        item_list_add_item(handle, TEST_ARRAY[index]);
+    }
+    umock_c_reset_all_calls();
+
+    for (size_t index = 0; index < item_count; index++)
+    {
+        STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
+    }
+    int result = item_list_clear(handle);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
 END_TEST_SUITE(item_list_ut)

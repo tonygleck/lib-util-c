@@ -47,6 +47,25 @@ static void add_new_item(ITEM_LIST_INFO* list_info, void* item, bool local_alloc
     list_info->item_count++;
 }
 
+static void clear_all_items(ITEM_LIST_INFO* list_info)
+{
+    for (size_t index = 0; index < list_info->item_count; index++)
+    {
+        ITEM_NODE* temp = list_info->head_node->next;
+        if (list_info->head_node->locally_allocated)
+        {
+            free(list_info->head_node->node_item);
+        }
+        else
+        {
+            list_info->destroy_cb(list_info->user_ctx, list_info->head_node->node_item);
+        }
+        free(list_info->head_node);
+        list_info->head_node = temp;
+    }
+    list_info->item_count = 0;
+}
+
 ITEM_LIST_HANDLE item_list_create(ITEM_LIST_DESTROY_ITEM destroy_cb, void* user_ctx)
 {
     ITEM_LIST_INFO* result;
@@ -71,20 +90,7 @@ void item_list_destroy(ITEM_LIST_HANDLE handle)
 {
     if (handle != NULL)
     {
-        for (size_t index = 0; index < handle->item_count; index++)
-        {
-            ITEM_NODE* temp = handle->head_node->next;
-            if (handle->head_node->locally_allocated)
-            {
-                free(handle->head_node->node_item);
-            }
-            else
-            {
-                handle->destroy_cb(handle->user_ctx, handle->head_node->node_item);
-            }
-            free(handle->head_node);
-            handle->head_node = temp;
-        }
+        clear_all_items(handle);
         free(handle);
     }
 }
@@ -238,6 +244,22 @@ const void* item_list_get_front(ITEM_LIST_HANDLE handle)
     else
     {
         result = handle->head_node->node_item;
+    }
+    return result;
+}
+
+int item_list_clear(ITEM_LIST_HANDLE handle)
+{
+    int result;
+    if (handle == NULL)
+    {
+        log_error("Invalid parameter handle NULL");
+        result = __LINE__;
+    }
+    else
+    {
+        clear_all_items(handle);
+        result = 0;
     }
     return result;
 }
