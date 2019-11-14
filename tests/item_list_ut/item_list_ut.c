@@ -68,9 +68,9 @@ TEST_SUITE_INITIALIZE(suite_init)
 
     REGISTER_GLOBAL_MOCK_HOOK(item_destroy_callback, my_item_destroy_cb);
 
-    /*REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
-    REGISTER_GLOBAL_MOCK_FAIL_RETURN(gballoc_malloc, NULL);
-    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);*/
+    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
+    REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
+    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)

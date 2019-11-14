@@ -6,17 +6,12 @@
 #include <stdlib.h>
 #endif
 
-void* my_gballoc_malloc(size_t size)
+static void* my_mem_shim_malloc(size_t size)
 {
     return malloc(size);
 }
 
-void* my_gballoc_realloc(void* ptr, size_t size)
-{
-    return realloc(ptr, size);
-}
-
-void my_gballoc_free(void* ptr)
+static void my_mem_shim_free(void* ptr)
 {
     free(ptr);
 }
@@ -38,7 +33,7 @@ void my_gballoc_free(void* ptr)
 #include "umock_c/umock_c_negative_tests.h"
 
 #define ENABLE_MOCKS
-//#include "azure_c_shared_utility/gballoc.h"
+#include "lib-util-c/sys_debug_shim.h"
 #undef ENABLE_MOCKS
 
 #include "lib-util-c/alarm_timer.h"
@@ -79,9 +74,9 @@ TEST_SUITE_INITIALIZE(a)
 
     REGISTER_UMOCK_ALIAS_TYPE(ALARM_TIMER_HANDLE, void*);
 
-    /*REGISTER_GLOBAL_MOCK_HOOK(gballoc_malloc, my_gballoc_malloc);
-    REGISTER_GLOBAL_MOCK_FAIL_RETURN(gballoc_malloc, NULL);
-    REGISTER_GLOBAL_MOCK_HOOK(gballoc_free, my_gballoc_free);*/
+    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
+    REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
+    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)

@@ -8,7 +8,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(lib-util-c)
 
 option(lib_util_c_ut "Include unittest in build" OFF)
-#option(refresh_submodules "set refresh_submodules to ON to update submodule files (default is OFF)" OFF)
 
 # do not add or build any tests of the dependencies
 set(skip_samples ON)
@@ -31,6 +30,7 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/binary_tree.c
     ${PROJECT_SOURCE_DIR}/src/crt_extensions.c
     ${PROJECT_SOURCE_DIR}/src/item_list.c
+    ${PROJECT_SOURCE_DIR}/src/item_map.c
     ${PROJECT_SOURCE_DIR}/src/sys_debug_shim.c
 )
 set(lib_header_files
@@ -39,6 +39,7 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_map.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sys_debug_shim.h
 )
 
@@ -64,3 +65,5 @@ if (${lib_util_c_ut})
     enable_testing()
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 endif()
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/samples)
