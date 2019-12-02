@@ -27,6 +27,7 @@ include_directories(${UMOCK_C_INC_FOLDER})
 set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/app_logging.c
     ${PROJECT_SOURCE_DIR}/src/alarm_timer.c
+    ${PROJECT_SOURCE_DIR}/src/binary_encoder.c
     ${PROJECT_SOURCE_DIR}/src/binary_tree.c
     ${PROJECT_SOURCE_DIR}/src/crt_extensions.c
     ${PROJECT_SOURCE_DIR}/src/item_list.c
@@ -36,6 +37,7 @@ set(lib_src_files
 set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/app_logging.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/alarm_timer.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_encoder.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h

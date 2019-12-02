@@ -446,4 +446,58 @@ TEST_FUNCTION(item_map_remove_item_collision_succeed)
     item_map_destroy(handle);
 }
 
+TEST_FUNCTION(item_map_clear_all_handle_NULL_fail)
+{
+    // arrange
+
+    // act
+    int result = item_map_clear_all(NULL);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+TEST_FUNCTION(item_map_clear_all_succeed)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    int value = 22;
+    (void)item_map_add_item(handle, "aaaaaa", &value, sizeof(int));
+    int value_2 = 77;
+    (void)item_map_add_item(handle, "aaaba", &value_2, sizeof(int));
+    umock_c_reset_all_calls();
+
+    // act
+    int result = item_map_clear_all(handle);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
+TEST_FUNCTION(item_map_clear_all_no_items_succeed)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    umock_c_reset_all_calls();
+
+    // act
+    int result = item_map_clear_all(handle);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
 END_TEST_SUITE(item_map_ut)
