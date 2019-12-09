@@ -106,6 +106,8 @@ TEST_FUNCTION(alarm_timer_create_succeed)
     // arrange
     ALARM_TIMER_HANDLE result;
 
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+
     // act
     result = alarm_timer_create();
 
@@ -122,6 +124,8 @@ TEST_FUNCTION(alarm_timer_destroy_succeed)
     // arrange
     ALARM_TIMER_HANDLE handle = alarm_timer_create();
     umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
 
     // act
     alarm_timer_destroy(handle);

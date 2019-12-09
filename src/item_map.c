@@ -109,6 +109,8 @@ static void clear_map(ITEM_MAP_INFO* map_item)
                 free(delete_item);
             }
             free(kv_item);
+            // Set the value array at this index to NULL
+            map_item->value_array[index] = NULL;
         }
     }
 }
@@ -330,6 +332,7 @@ int item_map_clear_all(ITEM_MAP_HANDLE handle)
     {
         clear_map(handle);
         handle->item_len = 0;
+        result = 0;
     }
     return result;
 }

@@ -470,12 +470,19 @@ TEST_FUNCTION(item_map_clear_all_succeed)
     (void)item_map_add_item(handle, "aaaba", &value_2, sizeof(int));
     umock_c_reset_all_calls();
 
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+
     // act
     int result = item_map_clear_all(handle);
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    ASSERT_ARE_EQUAL(int, 0, item_map_size(handle));
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
@@ -493,7 +500,7 @@ TEST_FUNCTION(item_map_clear_all_no_items_succeed)
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    ASSERT_ARE_EQUAL(int, 0, item_map_size(handle));
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
