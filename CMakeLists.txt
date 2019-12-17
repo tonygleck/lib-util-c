@@ -29,6 +29,7 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/alarm_timer.c
     ${PROJECT_SOURCE_DIR}/src/binary_encoder.c
     ${PROJECT_SOURCE_DIR}/src/binary_tree.c
+    ${PROJECT_SOURCE_DIR}/src/buffer_alloc.c
     ${PROJECT_SOURCE_DIR}/src/crt_extensions.c
     ${PROJECT_SOURCE_DIR}/src/item_list.c
     ${PROJECT_SOURCE_DIR}/src/item_map.c
@@ -39,6 +40,7 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/alarm_timer.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_encoder.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/buffer_alloc.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_map.h
@@ -48,7 +50,10 @@ set(lib_header_files
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
 add_library(lib-util-c ${lib_src_files} ${lib_header_files})
+target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
+#target_link_libraries(my_library PUBLIC other_library)
 
+addCompileSettings(lib-util-c)
 compileTargetAsC99(lib-util-c)
 
 # Add testing
@@ -65,6 +70,7 @@ if (${lib_util_c_ut})
     include_directories(${CTEST_INC_FOLDER})
 
     enable_testing()
+    #enable_coverage_testing()
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 endif()
 

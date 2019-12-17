@@ -182,7 +182,7 @@ static size_t get_base64_char_count(const char* source)
 static int decode_base32_source_value(const char* source, size_t src_len, unsigned char* output, size_t* result_len)
 {
     int result;
-    size_t test = (src_len % BASE32_INPUT_SIZE);
+    //size_t test = (src_len % BASE32_INPUT_SIZE);
     if (src_len % BASE32_INPUT_SIZE != 0)
     {
         log_error("Failure invalid input length %lu", (unsigned long)src_len);
@@ -202,7 +202,6 @@ static int decode_base32_source_value(const char* source, size_t src_len, unsign
             size_t dest_size = 0;
             unsigned char input[8];
             bool continue_processing = true;
-            unsigned char* temp_buffer;
             unsigned char* dest_buff = output;
 
             const char* iterator = source;

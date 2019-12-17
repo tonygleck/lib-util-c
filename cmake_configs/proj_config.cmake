@@ -1,4 +1,22 @@
 
+function(addCompileSettings theTarget)
+    if (MSVC)
+        target_compile_options(${theTarget} PRIVATE
+                    -W4)
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+        # Make warning as error
+        add_definitions(/WX)
+    else()
+        target_compile_options(${theTarget} PRIVATE
+                    -Wall -Werror -Wextra)
+    endif()
+# target_compile_options(${theTarget} PRIVATE
+#         $<$<OR:$<CXX_COMPILER_ID:Clang>, $<CXX_COMPILER_ID:AppleClang>, $<CXX_COMPILER_ID:GNU>>:
+#             -Wall -Werror>
+#         $<$<CXX_COMPILER_ID:MSVC>:
+#             -W4)
+endfunction()
+
 include(CheckSymbolExists)
 function(detect_architecture symbol arch)
     if (NOT DEFINED ARCHITECTURE OR ARCHITECTURE STREQUAL "")

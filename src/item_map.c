@@ -38,7 +38,7 @@ static uint32_t default_hash_function(const char* key)
     uint32_t result = START_HASH_VALUE;
     char str_value;
 
-    while (str_value = *key++)
+    while ((str_value = *key++))
     {
         result = ((result << 5) + result) + str_value; // result * 33 + str_value;
     }
@@ -260,7 +260,7 @@ int item_map_remove_item(ITEM_MAP_HANDLE handle, const char* key)
     if (handle == NULL || key == NULL)
     {
         log_error("Invalid parameter specified handle: %p, key: %p", handle, key);
-        result == __LINE__;
+        result = __LINE__;
     }
     else
     {
