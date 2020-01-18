@@ -32,3 +32,14 @@ int clone_string(char** target, const char* source)
     }
     return result;
 }
+
+time_t get_time(void)
+{
+    return time(NULL);
+}
+
+struct tm* get_time_value(void)
+{
+    time_t mark_time = time(NULL);
+    return gmtime(&mark_time);
+}
