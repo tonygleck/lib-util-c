@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef BINARY_TREE_H
-#define BINARY_TREE_H
+#pragma once
 
 #ifdef __cplusplus
 #include <cstdio>
@@ -36,5 +35,3 @@ MOCKABLE_FUNCTION(, char*, binary_tree_construct_visual, BINARY_TREE_HANDLE, han
 #ifdef __cplusplus
 }
 #endif
-
-#endif  /* BINARY_TREE_H */

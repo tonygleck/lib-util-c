@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef SYS_LOCK_H
-#define SYS_LOCK_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,5 +20,3 @@ MOCKABLE_FUNCTION(, void, sys_lock_unlock, SYS_LOCK_HANDLE, handle);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // SYS_LOCK_H

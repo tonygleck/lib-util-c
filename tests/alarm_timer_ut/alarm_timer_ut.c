@@ -119,6 +119,24 @@ TEST_FUNCTION(alarm_timer_create_succeed)
     alarm_timer_destroy(result);
 }
 
+TEST_FUNCTION(alarm_timer_create_fail)
+{
+    // arrange
+    ALARM_TIMER_HANDLE result;
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+
+    // act
+    result = alarm_timer_create();
+
+    // assert
+    ASSERT_IS_NULL(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    alarm_timer_destroy(result);
+}
+
 TEST_FUNCTION(alarm_timer_destroy_succeed)
 {
     // arrange

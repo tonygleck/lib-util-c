@@ -185,6 +185,24 @@ TEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
     my_mem_shim_free(buffer.payload);
 }
 
+TEST_FUNCTION(string_buffer_construct_malloc_fail)
+{
+    // arrange
+    STRING_BUFFER buffer = { 0 };
+    const char* src_string = "test_string";
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+
+    // act
+    int result = string_buffer_construct(&buffer, src_string);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
 TEST_FUNCTION(string_buffer_construct_sprintf_buffer_NULL_fail)
 {
     // arrange
@@ -240,6 +258,26 @@ TEST_FUNCTION(string_buffer_construct_sprintf_succeed)
 
     // cleanup
     my_mem_shim_free(buffer.payload);
+}
+
+TEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
+{
+    // arrange
+    STRING_BUFFER buffer = { 0 };
+    const char* fmt_string = "test_string_%d";
+    const char* total_string = "test_string_123";
+    int value = 123;
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+
+    // act
+    int result = string_buffer_construct_sprintf(&buffer, fmt_string, value);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
 }
 
 TEST_FUNCTION(string_buffer_construct_sprintf_append_string_succeed)
@@ -336,6 +374,25 @@ TEST_FUNCTION(byte_buffer_construct_succeed)
     my_mem_shim_free(buffer.payload);
 }
 
+TEST_FUNCTION(byte_buffer_construct_malloc_fail)
+{
+    // arrange
+    BYTE_BUFFER buffer = { 0 };
+    const unsigned char binary_buff[] = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
+    size_t bin_length = 5;
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+
+    // act
+    int result = byte_buffer_construct(&buffer, binary_buff, bin_length);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
 TEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
 {
     // arrange
@@ -359,6 +416,34 @@ TEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
     ASSERT_ARE_EQUAL(int, 0, memcmp(buffer.payload, initial_buff, buffer.payload_size));
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    my_mem_shim_free(buffer.payload);
+}
+
+TEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
+{
+    // arrange
+    size_t bin_length = 64;
+    size_t init_length = 4;
+    BYTE_BUFFER buffer = { 0 };
+    unsigned char initial_buff[68];
+    for (size_t index = 0; index < bin_length+init_length; index++)
+    {
+        initial_buff[index] = 0x25 + index;
+    }
+
+    (void)byte_buffer_construct(&buffer, initial_buff, init_length);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(realloc(IGNORED_PTR_ARG, IGNORED_NUM_ARG)).SetReturn(NULL);
+
+    // act
+    int result = byte_buffer_construct(&buffer, initial_buff+init_length, bin_length);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup

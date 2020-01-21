@@ -99,6 +99,8 @@ TEST_FUNCTION(item_list_create_succeed)
     // arrange
     ITEM_LIST_HANDLE result;
 
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+
     // act
     result = item_list_create(item_destroy_callback, NULL);
 
@@ -109,6 +111,23 @@ TEST_FUNCTION(item_list_create_succeed)
 
     // cleanup
     item_list_destroy(result);
+}
+
+TEST_FUNCTION(item_list_create_fail)
+{
+    // arrange
+    ITEM_LIST_HANDLE result;
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+
+    // act
+    result = item_list_create(item_destroy_callback, NULL);
+
+    // assert
+    ASSERT_IS_NULL(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
 }
 
 TEST_FUNCTION(item_list_create_destroy_cb_NULL_fail)
@@ -144,6 +163,9 @@ TEST_FUNCTION(item_list_destroy_no_items_succeed)
 {
     // arrange
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
 
     // act
     item_list_destroy(handle);
@@ -154,10 +176,27 @@ TEST_FUNCTION(item_list_destroy_no_items_succeed)
     // cleanup
 }
 
+TEST_FUNCTION(item_list_add_item_handle_NULL_fail)
+{
+    // arrange
+
+    // act
+    int result = item_list_add_item(NULL, TEST_ITEM_1);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
 TEST_FUNCTION(item_list_add_item_1_item_succeed)
 {
     // arrange
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
 
     // act
     int result = item_list_add_item(handle, TEST_ITEM_1);
@@ -175,11 +214,15 @@ TEST_FUNCTION(item_list_add_item_multiple_item_succeed)
 {
     // arrange
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
     size_t item_count = sizeof(TEST_ARRAY)/sizeof(TEST_ARRAY[0]);
 
     // act
     for (size_t index = 0; index < item_count; index++)
     {
+        STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+
         int result = item_list_add_item(handle, TEST_ARRAY[index]);
         ASSERT_ARE_EQUAL(int, 0, result);
     }
@@ -204,15 +247,50 @@ TEST_FUNCTION(item_list_add_copy_handle_NULL_fail)
     // cleanup
 }
 
+TEST_FUNCTION(item_list_add_copy_fail)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
+    int negativeTestsInitResult = umock_c_negative_tests_init();
+    ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+
+    umock_c_negative_tests_snapshot();
+
+    size_t count = umock_c_negative_tests_call_count();
+    for (size_t index = 0; index < count; index++)
+    {
+        umock_c_negative_tests_reset();
+        umock_c_negative_tests_fail_call(index);
+
+        int result = item_list_add_copy(handle, TEST_ITEM_1, TEST_ITEM_SIZE);
+
+        // assert
+        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    }
+
+    // cleanup
+    umock_c_negative_tests_deinit();
+    item_list_destroy(handle);
+}
+
 TEST_FUNCTION(item_list_add_copy_succeed)
 {
     // arrange
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
 
     int result = item_list_add_copy(handle, TEST_ITEM_1, TEST_ITEM_SIZE);
-    ASSERT_ARE_EQUAL(int, 0, result);
 
     // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
     ASSERT_ARE_EQUAL(int, 1, item_list_item_count(handle));
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
@@ -240,11 +318,36 @@ TEST_FUNCTION(item_list_remove_item_succeed)
     umock_c_reset_all_calls();
 
     STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+
     int result = item_list_remove_item(handle, 0);
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
     ASSERT_ARE_EQUAL(int, 0, item_list_item_count(handle));
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
+TEST_FUNCTION(item_list_remove_item_2_items_succeed)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    item_list_add_copy(handle, TEST_ITEM_1, TEST_ITEM_SIZE);
+    item_list_add_copy(handle, TEST_ITEM_2, TEST_ITEM_SIZE);
+    item_list_add_copy(handle, TEST_ITEM_3, TEST_ITEM_SIZE);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+
+    int result = item_list_remove_item(handle, 2);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 2, item_list_item_count(handle));
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
@@ -297,6 +400,8 @@ TEST_FUNCTION(item_list_get_item_success)
 {
     // arrange
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
     size_t item_count = sizeof(TEST_ARRAY)/sizeof(TEST_ARRAY[0]);
     for (size_t index = 0; index < item_count; index++)
     {
@@ -319,6 +424,8 @@ TEST_FUNCTION(item_list_get_item_index_out_of_range_fail)
 {
     // arrange
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
     size_t item_count = sizeof(TEST_ARRAY)/sizeof(TEST_ARRAY[0]);
     for (size_t index = 0; index < item_count; index++)
     {
@@ -363,11 +470,60 @@ TEST_FUNCTION(item_list_clear_handle_success)
     for (size_t index = 0; index < item_count; index++)
     {
         STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
+        STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
     }
     int result = item_list_clear(handle);
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
+TEST_FUNCTION(item_list_get_front_handle_NULL_fail)
+{
+    // arrange
+
+    const unsigned char* front_item = item_list_get_front(NULL);
+
+    // assert
+    ASSERT_IS_NULL(front_item);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+TEST_FUNCTION(item_list_get_front_no_items_fail)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
+    const unsigned char* front_item = item_list_get_front(handle);
+
+    // assert
+    ASSERT_IS_NULL(front_item);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
+TEST_FUNCTION(item_list_get_front_succeed)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    item_list_add_item(handle, TEST_ITEM_1);
+    item_list_add_item(handle, TEST_ITEM_2);
+    umock_c_reset_all_calls();
+
+    const unsigned char* front_item = item_list_get_front(handle);
+
+    // assert
+    ASSERT_IS_NOT_NULL(front_item);
+    ASSERT_ARE_EQUAL(int, 0, memcmp(front_item, TEST_ITEM_1, TEST_ITEM_SIZE));
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup

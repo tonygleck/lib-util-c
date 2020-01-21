@@ -1,8 +1,6 @@
-// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef BINARY_ENCODER_H
-#define BINARY_ENCODER_H
+#pragma once
 
 #ifdef __cplusplus
 #include <cstddef>
@@ -92,5 +90,3 @@ MOCKABLE_FUNCTION(, int, bin_encoder_64_decode_partial, const char*, source, siz
 #ifdef __cplusplus
 }
 #endif
-
-#endif // BINARY_ENCODER_H

@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef ALARM_TIMER_H
-#define ALARM_TIMER_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,5 +21,3 @@ MOCKABLE_FUNCTION(, bool, alarm_timer_is_expired, ALARM_TIMER_HANDLE, handle);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // ALARM_TIMER

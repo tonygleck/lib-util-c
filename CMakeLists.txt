@@ -1,6 +1,6 @@
 #Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.5)
 
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -11,6 +11,14 @@ option(lib_util_c_ut "Include unittest in build" OFF)
 
 # do not add or build any tests of the dependencies
 set(skip_samples ON)
+
+if (CMAKE_BUILD_TYPE MATCHES "Debug" AND NOT WIN32)
+    set(DEBUG_CONFIG ON)
+    set(ENABLE_COVERAGE ON)
+else()
+    set(ENABLE_COVERAGE OFF)
+    set(DEBUG_CONFIG OFF)
+endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_config.cmake")
 
@@ -60,6 +68,8 @@ compileTargetAsC99(lib-util-c)
 if (${lib_util_c_ut})
     include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
 
+    enable_coverage_testing()
+
     if ((NOT TARGET testrunnerswitcher) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/azure-c-testrunnerswitcher/CMakeLists.txt))
         add_subdirectory(${PROJECT_SOURCE_DIR}/deps/azure-c-testrunnerswitcher)
     endif()
@@ -70,8 +80,10 @@ if (${lib_util_c_ut})
     include_directories(${CTEST_INC_FOLDER})
 
     enable_testing()
-    #enable_coverage_testing()
+    include (CTest)
+
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
+
 endif()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/samples)

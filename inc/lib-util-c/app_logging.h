@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef APP_LOGGING_H
-#define APP_LOGGING_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,5 +53,3 @@ extern void log_set_log_function(APP_LOG_FN log_fn);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // APP_LOGGING_H

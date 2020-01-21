@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef CRT_EXTENSIONS_H
-#define CRT_EXTENSIONS_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,4 +20,3 @@ MOCKABLE_FUNCTION(, struct tm*, get_time_value);
 }
 #endif
 
-#endif // CRT_EXTENSIONS_H

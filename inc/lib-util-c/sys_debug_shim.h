@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef SYS_DEBUG_SHIM_H
-#define SYS_DEBUG_SHIM_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,5 +58,3 @@ That is because there is a rogue component (most likely CppUnitTest) including c
 #ifdef __cplusplus
 }
 #endif
-
-#endif // SYS_DEBUG_SHIM_H

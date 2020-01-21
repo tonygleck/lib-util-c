@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef ITEM_MAP_H
-#define ITEM_MAP_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,5 +27,3 @@ MOCKABLE_FUNCTION(, size_t, item_map_size, ITEM_MAP_HANDLE, handle);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // ITEM_MAP_H

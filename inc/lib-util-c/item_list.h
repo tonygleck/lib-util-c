@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef ITEM_LIST_H
-#define ITEM_LIST_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,5 +28,3 @@ MOCKABLE_FUNCTION(, int, item_list_clear, ITEM_LIST_HANDLE, handle);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // ITEM_LIST

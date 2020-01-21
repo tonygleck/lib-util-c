@@ -1,7 +1,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-#ifndef BUFFER_ALLOC_H
-#define BUFFER_ALLOC_H
+#pragma once
 
 #ifdef __cplusplus
 #include <cstdio>
@@ -36,5 +35,3 @@ MOCKABLE_FUNCTION(, int, byte_buffer_construct, BYTE_BUFFER*, buffer, const unsi
 #ifdef __cplusplus
 }
 #endif
-
-#endif // BUFFER_ALLOC_H

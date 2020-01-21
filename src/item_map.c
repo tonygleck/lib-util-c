@@ -272,6 +272,7 @@ int item_map_remove_item(ITEM_MAP_HANDLE handle, const char* key)
         {
             if (strcmp(kv_item->key, key) == 0)
             {
+                result = 0;
                 free_map_value(handle, kv_item);
                 free(kv_item->key);
                 if (kv_item->next != NULL)
