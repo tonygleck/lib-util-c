@@ -12,7 +12,7 @@ extern "C" {
 #include "umock_c/umock_c_prod.h"
 
 MOCKABLE_FUNCTION(, int, clone_string, char**, target, const char*, source);
-
+MOCKABLE_FUNCTION(, int, clone_string_with_size, char**, target, const char*, source, size_t, source_len);
 MOCKABLE_FUNCTION(, time_t, get_time);
 MOCKABLE_FUNCTION(, struct tm*, get_time_value);
 

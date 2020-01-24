@@ -57,15 +57,17 @@ static int allocate_buffer(GENERIC_BUFFER* buffer, size_t new_length, bool* real
         size_t curr_len = strlen(buffer->payload);
         if (curr_len + new_length + 1 >= buffer->alloc_size)
         {
+            char* temp_payload;
             size_t alloc_len = buffer->default_alloc + buffer->alloc_size + new_length + 1;
             // Realloc the string
-            if ((buffer->payload = realloc(buffer->payload, alloc_len)) == NULL)
+            if ((temp_payload = realloc(buffer->payload, alloc_len)) == NULL)
             {
                 log_error("Failure reallocating buffer value");
                 result = __LINE__;
             }
             else
             {
+                buffer->payload = temp_payload;
                 if (reallocated != NULL)
                 {
                     *reallocated = true;

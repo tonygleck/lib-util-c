@@ -8,6 +8,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(lib-util-c)
 
 option(lib_util_c_ut "Include unittest in build" OFF)
+option(lib_util_c_sample "Include samples in build" OFF)
 
 # do not add or build any tests of the dependencies
 set(skip_samples ON)
@@ -86,4 +87,6 @@ if (${lib_util_c_ut})
 
 endif()
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/samples)
+if (${lib_util_c_sample})
+    add_subdirectory(${PROJECT_SOURCE_DIR}/samples)
+endif()
