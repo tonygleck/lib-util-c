@@ -1,3 +1,4 @@
+# Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 function(addCompileSettings theTarget)
     if (MSVC)
@@ -6,21 +7,14 @@ function(addCompileSettings theTarget)
         # Make warning as error
         #add_definitions(/WX)
     else()
-        target_compile_options(${theTarget} PRIVATE -Wall -Werror -Wextra -Wshadow)
+        target_compile_options(${theTarget} PRIVATE -Wall -Werror -Wextra -Wshadow -fPIC)
 
         if (${DEBUG_CONFIG})
             target_compile_options(${theTarget} PRIVATE -O3)
         else()
             target_compile_options(${theTarget} PRIVATE -O0)
-            #target_compile_definitions(${theTarget} PRIVATE "-fprofile-arcs -ftest-coverage")
-            #set_target_properties(${theTarget} PROPERTIES COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
         endif()
     endif()
-# target_compile_options(${theTarget} PRIVATE
-#         $<$<OR:$<CXX_COMPILER_ID:Clang>, $<CXX_COMPILER_ID:AppleClang>, $<CXX_COMPILER_ID:GNU>>:
-#             -Wall -Werror>
-#         $<$<CXX_COMPILER_ID:MSVC>:
-#             -W4)
 endfunction()
 
 include(CheckSymbolExists)
