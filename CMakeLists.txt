@@ -62,7 +62,6 @@ include_directories(${PROJECT_SOURCE_DIR}/inc)
 
 add_library(lib-util-c ${lib_src_files} ${lib_header_files})
 target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
-#target_link_libraries(my_library PUBLIC other_library)
 
 addCompileSettings(lib-util-c)
 compileTargetAsC99(lib-util-c)
