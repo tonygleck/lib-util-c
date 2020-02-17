@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "lib-util-c/crt_extensions.h"
 #include "lib-util-c/app_logging.h"
@@ -53,6 +54,57 @@ int clone_string_with_size(char** target, const char* source, size_t source_len)
             memset(*target, 0, source_len+1);
             memcpy(*target, source, source_len);
             result = 0;
+        }
+    }
+    return result;
+}
+
+int clone_string_with_format(char** target, const char* format, ...)
+{
+    int result;
+    if (target == NULL || format == NULL)
+    {
+        log_error("Invalid parameter specified target: %p, format: %p", target, format);
+        result = __LINE__;
+    }
+    else
+    {
+        size_t maxBufSize = 0;
+        char* buf = NULL;
+
+        va_list arg_list;
+        int length;
+        va_start(arg_list, format);
+
+        length = vsnprintf(buf, maxBufSize, format, arg_list);
+        va_end(arg_list);
+        if (length > 0)
+        {
+            if ((*target = (char*)malloc(length+1)) != NULL)
+            {
+                va_start(arg_list, format);
+                if (vsnprintf(*target, length+1, format, arg_list) < 0)
+                {
+                    free(*target);
+                    log_error("Failure: vsnprintf formatting failed.");
+                    result = __LINE__;
+                }
+                else
+                {
+                    result = 0;
+                }
+                va_end(arg_list);
+            }
+            else
+            {
+                log_error("Failure: allocation failed.");
+                result = __LINE__;
+            }
+        }
+        else
+        {
+            log_error("Failure no format value specified");
+            result = __LINE__;
         }
     }
     return result;
