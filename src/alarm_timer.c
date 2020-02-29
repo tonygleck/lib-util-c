@@ -5,37 +5,23 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include "lib-util-c/sys_debug_shim.h"
 #include "lib-util-c/alarm_timer.h"
 #include "lib-util-c/app_logging.h"
 
-typedef struct ALARM_TIMER_INFO_TAG
+int alarm_timer_init(ALARM_TIMER_INFO* alarm_info)
 {
-    size_t expire_sec;
-    time_t start_time;
-} ALARM_TIMER_INFO;
-
-ALARM_TIMER_HANDLE alarm_timer_create(void)
-{
-    ALARM_TIMER_INFO* result = (ALARM_TIMER_INFO*)malloc(sizeof(ALARM_TIMER_INFO));
-    if (result == NULL)
+    int result;
+    if (alarm_info == NULL)
     {
-        log_error("Failure allocating timer info");
+        log_error("Alarm info is NULL");
+        result = __LINE__;
     }
     else
     {
-        result->expire_sec = 0;
-        result->start_time = time(NULL);
+        alarm_info->expire_sec = 0;
+        alarm_info->start_time = time(NULL);
     }
     return result;
-}
-
-void alarm_timer_destroy(ALARM_TIMER_HANDLE handle)
-{
-    if (handle != NULL)
-    {
-        free(handle);
-    }
 }
 
 int alarm_timer_start(ALARM_TIMER_HANDLE handle, size_t expire_sec)

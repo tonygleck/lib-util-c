@@ -6,16 +6,6 @@
 #include <stdlib.h>
 #endif
 
-static void* my_mem_shim_malloc(size_t size)
-{
-    return malloc(size);
-}
-
-static void my_mem_shim_free(void* ptr)
-{
-    free(ptr);
-}
-
 #ifdef __cplusplus
 #include <cstddef>
 #include <ctime>
@@ -73,10 +63,6 @@ TEST_SUITE_INITIALIZE(a)
     ASSERT_ARE_EQUAL(int, 0, result);
 
     REGISTER_UMOCK_ALIAS_TYPE(ALARM_TIMER_HANDLE, void*);
-
-    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
-    REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
-    REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)
@@ -101,67 +87,32 @@ TEST_FUNCTION_CLEANUP(method_cleanup)
     TEST_MUTEX_RELEASE(g_testByTest);
 }
 
-TEST_FUNCTION(alarm_timer_create_succeed)
+TEST_FUNCTION(alarm_timer_init_succeed)
 {
     // arrange
-    ALARM_TIMER_HANDLE result;
-
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    ALARM_TIMER_INFO timer_info;
 
     // act
-    result = alarm_timer_create();
+    int result = alarm_timer_init(&timer_info);
 
     // assert
-    ASSERT_IS_NOT_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
-
-    // cleanup
-    alarm_timer_destroy(result);
-}
-
-TEST_FUNCTION(alarm_timer_create_fail)
-{
-    // arrange
-    ALARM_TIMER_HANDLE result;
-
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
-
-    // act
-    result = alarm_timer_create();
-
-    // assert
-    ASSERT_IS_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
-
-    // cleanup
-    alarm_timer_destroy(result);
-}
-
-TEST_FUNCTION(alarm_timer_destroy_succeed)
-{
-    // arrange
-    ALARM_TIMER_HANDLE handle = alarm_timer_create();
-    umock_c_reset_all_calls();
-
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-
-    // act
-    alarm_timer_destroy(handle);
-
-    // assert
+    ASSERT_ARE_EQUAL(int, result, 0);
+    //ASSERT_ARE_EQUAL(time_t, 0, timer_info.start_time);
+    ASSERT_ARE_EQUAL(size_t, 0, timer_info.expire_sec);
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(alarm_timer_destroy_NULL_succeed)
+TEST_FUNCTION(alarm_timer_init_time_info_NULL_fail)
 {
     // arrange
 
     // act
-    alarm_timer_destroy(NULL);
+    int result = alarm_timer_init(NULL);
 
     // assert
+    ASSERT_ARE_NOT_EQUAL(int, result, 0);
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
@@ -187,7 +138,10 @@ TEST_FUNCTION(alarm_timer_start_succeed)
 {
     // arrange
     size_t expire_time = 10;
-    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    ALARM_TIMER_HANDLE handle;
+    ALARM_TIMER_INFO timer_info;
+    alarm_timer_init(&timer_info);
+    handle = &timer_info;
     umock_c_reset_all_calls();
 
     // act
@@ -198,7 +152,6 @@ TEST_FUNCTION(alarm_timer_start_succeed)
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    alarm_timer_destroy(handle);
 }
 
 TEST_FUNCTION(alarm_timer_reset_handle_NULL_succeed)
@@ -218,7 +171,10 @@ TEST_FUNCTION(alarm_timer_reset_succeed)
 {
     // arrange
     size_t expire_time = 1;
-    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    ALARM_TIMER_HANDLE handle;
+    ALARM_TIMER_INFO timer_info;
+    alarm_timer_init(&timer_info);
+    handle = &timer_info;
     alarm_timer_start(handle, expire_time);
     umock_c_reset_all_calls();
 
@@ -232,14 +188,16 @@ TEST_FUNCTION(alarm_timer_reset_succeed)
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    alarm_timer_destroy(handle);
 }
 
 TEST_FUNCTION(alarm_timer_is_expired_false_succeed)
 {
     // arrange
     size_t expire_time = 10;
-    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    ALARM_TIMER_HANDLE handle;
+    ALARM_TIMER_INFO timer_info;
+    alarm_timer_init(&timer_info);
+    handle = &timer_info;
     alarm_timer_start(handle, expire_time);
     umock_c_reset_all_calls();
 
@@ -251,14 +209,16 @@ TEST_FUNCTION(alarm_timer_is_expired_false_succeed)
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    alarm_timer_destroy(handle);
 }
 
 TEST_FUNCTION(alarm_timer_is_expired_true_succeed)
 {
     // arrange
     size_t expire_time = 1;
-    ALARM_TIMER_HANDLE handle = alarm_timer_create();
+    ALARM_TIMER_HANDLE handle;
+    ALARM_TIMER_INFO timer_info;
+    (void)alarm_timer_init(&timer_info);
+    handle = &timer_info;
     alarm_timer_start(handle, expire_time);
     umock_c_reset_all_calls();
 
@@ -271,7 +231,6 @@ TEST_FUNCTION(alarm_timer_is_expired_true_succeed)
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    alarm_timer_destroy(handle);
 }
 
 TEST_FUNCTION(alarm_timer_is_expired_NULL_fail)

@@ -8,3 +8,4 @@ set(lib_util_sample_files
 add_executable(lib_util_sample ${lib_util_sample_files})
 
 target_link_libraries(lib_util_sample lib-util-c)
+target_link_libraries(lib_util_sample rt)

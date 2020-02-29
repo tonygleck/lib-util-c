@@ -52,11 +52,25 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/buffer_alloc.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/file_mgr.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/interval_timer.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_map.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sys_debug_shim.h
 )
+
+if (WIN32)
+    set(lib_pal_src_files ${lib_pal_src_files}
+    )
+elseif(UNIX)
+    set(lib_pal_src_files ${lib_pal_src_files}
+        ${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer.c
+    )
+elseif(STM32)
+    set(lib_pal_src_files ${lib_pal_src_files}
+    )
+endif()
+
 
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
