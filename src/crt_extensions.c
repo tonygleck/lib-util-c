@@ -109,14 +109,3 @@ int clone_string_with_format(char** target, const char* format, ...)
     }
     return result;
 }
-
-time_t get_time(void)
-{
-    return time(NULL);
-}
-
-struct tm* get_time_value(void)
-{
-    time_t mark_time = time(NULL);
-    return gmtime(&mark_time);
-}

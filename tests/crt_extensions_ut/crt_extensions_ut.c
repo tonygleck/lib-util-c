@@ -314,32 +314,32 @@ TEST_FUNCTION(clone_string_with_format_fail)
     my_mem_shim_free(target);
 }
 
-TEST_FUNCTION(get_time_success)
-{
-    // arrange
+// TEST_FUNCTION(get_time_success)
+// {
+//     // arrange
 
-    // act
-    time_t result = get_time();
+//     // act
+//     time_t result = get_time();
 
-    // assert
-    ASSERT_ARE_NOT_EQUAL(int, -1, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+//     // assert
+//     ASSERT_ARE_NOT_EQUAL(int, -1, result);
+//     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    // cleanup
-}
+//     // cleanup
+// }
 
-TEST_FUNCTION(get_time_value_success)
-{
-    // arrange
+// TEST_FUNCTION(get_time_value_success)
+// {
+//     // arrange
 
-    // act
-    struct tm* result = get_time_value();
+//     // act
+//     struct tm* result = get_time_value();
 
-    // assert
-    ASSERT_IS_NOT_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+//     // assert
+//     ASSERT_IS_NOT_NULL(result);
+//     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-    // cleanup
-}
+//     // cleanup
+// }
 
 END_TEST_SUITE(crt_extensions_ut)

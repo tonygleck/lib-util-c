@@ -15,9 +15,6 @@ MOCKABLE_FUNCTION(, int, clone_string, char**, target, const char*, source);
 MOCKABLE_FUNCTION(, int, clone_string_with_size, char**, target, const char*, source, size_t, source_len);
 extern int clone_string_with_format(char** target, const char* format, ...);
 
-MOCKABLE_FUNCTION(, time_t, get_time);
-MOCKABLE_FUNCTION(, struct tm*, get_time_value);
-
 #ifdef __cplusplus
 }
 #endif
