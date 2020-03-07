@@ -90,14 +90,13 @@ TEST_FUNCTION_CLEANUP(method_cleanup)
 TEST_FUNCTION(alarm_timer_init_succeed)
 {
     // arrange
-    ALARM_TIMER_INFO timer_info;
+    ALARM_TIMER_INFO timer_info = {0};
 
     // act
     int result = alarm_timer_init(&timer_info);
 
     // assert
     ASSERT_ARE_EQUAL(int, result, 0);
-    //ASSERT_ARE_EQUAL(time_t, 0, timer_info.start_time);
     ASSERT_ARE_EQUAL(size_t, 0, timer_info.expire_sec);
     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
@@ -223,7 +222,7 @@ TEST_FUNCTION(alarm_timer_is_expired_true_succeed)
     umock_c_reset_all_calls();
 
     // act
-    sleep_for_now((expire_time*2)*500);
+    sleep_for_now((expire_time*3)*1000);
     bool result = alarm_timer_is_expired(handle);
 
     // assert

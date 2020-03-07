@@ -46,17 +46,18 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/sys_debug_shim.c
 )
 set(lib_header_files
-    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/app_logging.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/alarm_timer.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/app_logging.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_encoder.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/buffer_alloc.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/file_mgr.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/interval_timer.h
-    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_map.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sys_debug_shim.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/thread_mgr.h
 )
 
 if (WIN32)
@@ -65,6 +66,7 @@ if (WIN32)
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
         ${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer.c
+        ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
     )
 elseif(STM32)
     set(lib_pal_src_files ${lib_pal_src_files}
