@@ -13,6 +13,7 @@
 static int i = 0;
 
 #include "lib-util-c/item_map.h"
+#include "lib-util-c/thread_mgr.h"
 
 #define START_HASH_VALUE    5381
 
@@ -87,6 +88,7 @@ int main()
         printf("timer_create() failed with %d\n", errno);
     }
 
+    thread_mgr_sleep(5);
 
     char a[200];
     read(2, &a, 199);

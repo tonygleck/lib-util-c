@@ -8,6 +8,16 @@
 #include "lib-util-c/app_logging.h"
 #include "lib-util-c/thread_mgr.h"
 
+typedef struct THREAD_MGR_INFO_TAG
+{
+    int j;
+} THREAD_MGR_INFO;
+
+THREAD_MGR_HANDLE thread_mgr_init(void)
+{
+    return NULL;
+}
+
 void thread_mgr_sleep(size_t milliseconds)
 {
     time_t seconds = milliseconds / 1000;

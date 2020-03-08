@@ -65,7 +65,7 @@ if (WIN32)
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
-        ${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer.c
+        #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
     )
 elseif(STM32)
@@ -76,7 +76,8 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
-add_library(lib-util-c ${lib_src_files} ${lib_header_files})
+message("Files: ${lib_src_files}")
+add_library(lib-util-c ${lib_src_files} ${lib_header_files} ${lib_pal_src_files})
 target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
 
 addCompileSettings(lib-util-c)
