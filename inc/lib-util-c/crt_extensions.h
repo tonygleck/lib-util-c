@@ -14,6 +14,7 @@ extern "C" {
 MOCKABLE_FUNCTION(, int, clone_string, char**, target, const char*, source);
 MOCKABLE_FUNCTION(, int, clone_string_with_size, char**, target, const char*, source, size_t, source_len);
 extern int clone_string_with_format(char** target, const char* format, ...);
+extern int clone_string_with_size_format(char** target, const char* source, size_t source_len, const char* format, ...);
 
 #ifdef __cplusplus
 }

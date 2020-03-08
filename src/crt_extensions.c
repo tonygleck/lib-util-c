@@ -109,3 +109,57 @@ int clone_string_with_format(char** target, const char* format, ...)
     }
     return result;
 }
+
+int clone_string_with_size_format(char** target, const char* source, size_t source_len, const char* format, ...)
+{
+    int result;
+    if (target == NULL || format == NULL || source == NULL)
+    {
+        log_error("Invalid parameter specified target: %p, format: %p, source: %p", target, format, source);
+        result = __LINE__;
+    }
+    else
+    {
+        size_t maxBufSize = 0;
+        char* buf = NULL;
+
+        va_list arg_list;
+        int length;
+        va_start(arg_list, format);
+
+        length = vsnprintf(buf, maxBufSize, format, arg_list);
+        va_end(arg_list);
+        if (length > 0)
+        {
+            if ((*target = (char*)malloc(length+source_len+1)) != NULL)
+            {
+                va_start(arg_list, format);
+                strncpy(*target, source, source_len);
+                char* printf_pos = (*target)+source_len;
+
+                if (vsnprintf(printf_pos, length+1, format, arg_list) < 0)
+                {
+                    free(*target);
+                    log_error("Failure: vsnprintf formatting failed.");
+                    result = __LINE__;
+                }
+                else
+                {
+                    result = 0;
+                }
+                va_end(arg_list);
+            }
+            else
+            {
+                log_error("Failure: allocation failed.");
+                result = __LINE__;
+            }
+        }
+        else
+        {
+            log_error("Failure no format value specified");
+            result = __LINE__;
+        }
+    }
+    return result;
+}

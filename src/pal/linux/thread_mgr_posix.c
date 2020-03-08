@@ -5,10 +5,10 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include "lib-util-c/alarm_timer.h"
 #include "lib-util-c/app_logging.h"
+#include "lib-util-c/thread_mgr.h"
 
-static void thread_mgr_sleep(unsigned int milliseconds)
+void thread_mgr_sleep(size_t milliseconds)
 {
     time_t seconds = milliseconds / 1000;
     long nsRemainder = (milliseconds % 1000) * 1000000;
