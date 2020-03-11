@@ -73,7 +73,7 @@ static int allocate_buffer(GENERIC_BUFFER* buffer, size_t new_length, bool* real
                     *reallocated = true;
                 }
                 buffer->alloc_size = alloc_len;
-                memset(buffer->payload+curr_len, 0, alloc_len-curr_len);
+                memset(((unsigned char*)buffer->payload)+curr_len, 0, alloc_len-curr_len);
                 result = 0;
             }
         }

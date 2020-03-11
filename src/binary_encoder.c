@@ -181,7 +181,7 @@ static size_t get_base64_char_count(const char* source)
 
 static int decode_base32_source_value(const char* source, size_t src_len, unsigned char* output, size_t* result_len)
 {
-    int result;
+    int result = 0;
     //size_t test = (src_len % BASE32_INPUT_SIZE);
     if (src_len % BASE32_INPUT_SIZE != 0)
     {
