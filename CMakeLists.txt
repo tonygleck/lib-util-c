@@ -76,7 +76,6 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
-message("Files: ${lib_src_files}")
 add_library(lib-util-c ${lib_src_files} ${lib_header_files} ${lib_pal_src_files})
 target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
 

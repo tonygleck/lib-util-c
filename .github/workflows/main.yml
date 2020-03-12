@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request 
+# Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
         include:
           - os: windows-latest
             CC: gcc
-           
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -33,12 +33,14 @@ jobs:
       uses: srt32/git-actions@v0.0.3
       with:
         args: git submodule update --init
-    
+
     # Runs a single command using the runners shell
     - name: run-cmake
-      run: lukka/run-cmake@v0.11
+      uses: lukka/run-cmake@v0.11
+      id: runcmake
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+        cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
         buildWithCMake: true
         buildwithCMakeArgs: -Dlib_util_c_ut=ON
 
