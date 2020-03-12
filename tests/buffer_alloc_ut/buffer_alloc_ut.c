@@ -402,7 +402,7 @@ TEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
     unsigned char initial_buff[68];
     for (size_t index = 0; index < bin_length+init_length; index++)
     {
-        initial_buff[index] = 0x25 + index;
+        initial_buff[index] = (unsigned char)(0x25 + index);
     }
 
     (void)byte_buffer_construct(&buffer, initial_buff, init_length);
@@ -431,7 +431,7 @@ TEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
     unsigned char initial_buff[68];
     for (size_t index = 0; index < bin_length+init_length; index++)
     {
-        initial_buff[index] = 0x25 + index;
+        initial_buff[index] = (unsigned char)(0x25 + index);
     }
 
     (void)byte_buffer_construct(&buffer, initial_buff, init_length);

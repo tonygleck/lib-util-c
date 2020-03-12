@@ -62,6 +62,7 @@ set(lib_header_files
 
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
+        ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
@@ -76,7 +77,6 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
-message("Files: ${lib_src_files}")
 add_library(lib-util-c ${lib_src_files} ${lib_header_files} ${lib_pal_src_files})
 target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
 

@@ -171,7 +171,6 @@ TEST_FUNCTION(clone_string_with_size_source_NULL_fail)
 TEST_FUNCTION(clone_string_with_size_target_NULL_fail)
 {
     // arrange
-    char* target;
 
     // act
     int result = clone_string_with_size(NULL, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN);
