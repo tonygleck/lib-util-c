@@ -19,7 +19,7 @@ int alarm_timer_init(ALARM_TIMER_INFO* alarm_info)
     else
     {
         alarm_info->expire_sec = 0;
-        alarm_info->start_time = time(NULL);
+        alarm_info->start_time = 0;
         result = 0;
     }
     return result;
@@ -57,7 +57,6 @@ bool alarm_timer_is_expired(ALARM_TIMER_HANDLE handle)
     {
         time_t curr_time = time(NULL);
         double time_diff = difftime(curr_time, handle->start_time);
-        //time_diff = time_diff < 0 ? time_diff*-1 : time_diff;
         result = ((size_t)time_diff > handle->expire_sec);
     }
     else
