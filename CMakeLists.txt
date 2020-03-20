@@ -62,6 +62,7 @@ set(lib_header_files
 
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
+        ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}

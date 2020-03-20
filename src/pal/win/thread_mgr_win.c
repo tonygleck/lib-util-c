@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <time.h>
+#include <Windows.h>
 
 #include "lib-util-c/alarm_timer.h"
 #include "lib-util-c/app_logging.h"
