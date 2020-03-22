@@ -35,7 +35,7 @@ typedef struct BINARY_TREE_INFO_TAG
     NODE_INFO* root_node;
 } BINARY_TREE_INFO;
 
-static int construct_visual_representation(const NODE_INFO* node_info, char* visualization, size_t pos)
+static size_t construct_visual_representation(const NODE_INFO* node_info, char* visualization, size_t pos)
 {
     /*
             10
@@ -77,8 +77,8 @@ static int construct_visual_representation(const NODE_INFO* node_info, char* vis
 static int calculate_balance_factor(const NODE_INFO* node_info)
 {
     int result;
-    result = node_info->left == NULL ? 0 : node_info->left->height;
-    result -= node_info->right == NULL ? 0 : node_info->right->height;
+    result = (int)(node_info->left == NULL ? 0 : node_info->left->height);
+    result -= (int)(node_info->right == NULL ? 0 : node_info->right->height);
     return result;
 }
 
