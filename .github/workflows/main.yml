@@ -6,26 +6,16 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   pull_request:
-    branches:
-      - master
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  job_id:
-    name: ${{ matrix.os}}-cmake-build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        include:
-          - os: windows-latest
-            CC: gcc
-          - os: ubuntu-latest
-            CC: gcc
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,18 +24,9 @@ jobs:
       with:
         submodules: 'true'
 
-    # Runs a single command using the runners shell
-    - name: run-cmake
-      uses: lukka/run-cmake@v0.11
-      id: runcmake
-      with:
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-        cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-        buildWithCMake: true
-        #buildwithCMakeArgs: -Dlib_util_c_ut=ON
+    - name: valgrind
+      run: sudo apt-get install -y gcc valgrind cmake
 
-    # Runs a set of commands using the runners shell
-    #- name: Run a multi-line script
-    #  run: |
-    #    echo Add other actions to build,
-    #    echo test, and deploy your project.
+    # Runs a single command using the runners shell
+    - name: Run build coverage script
+      run: $GITHUB_WORKSPACE/scripts/build_coverage.sh

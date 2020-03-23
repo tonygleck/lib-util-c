@@ -313,19 +313,54 @@ TEST_FUNCTION(clone_string_with_format_fail)
     my_mem_shim_free(target);
 }
 
-// TEST_FUNCTION(get_time_success)
-// {
-//     // arrange
+TEST_FUNCTION(clone_string_with_size_format_target_NULL_fail)
+{
+    // arrange
+    char* target;
 
-//     // act
-//     time_t result = get_time();
+    // act
+    int result = clone_string_with_size_format(NULL, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
 
-//     // assert
-//     ASSERT_ARE_NOT_EQUAL(int, -1, result);
-//     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
-//     // cleanup
-// }
+    // cleanup
+}
+
+TEST_FUNCTION(clone_string_with_size_format_source_NULL_fail)
+{
+    // arrange
+    char* target;
+
+    // act
+    int result = clone_string_with_size_format(&target, NULL, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+TEST_FUNCTION(clone_string_with_size_format_success)
+{
+    // arrange
+    char* target;
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+
+    // act
+    int result = clone_string_with_size_format(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, "source_clone_string_with_format7", target);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    my_mem_shim_free(target);
+}
 
 // TEST_FUNCTION(get_time_value_success)
 // {

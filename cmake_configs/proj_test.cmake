@@ -12,16 +12,12 @@ function(build_test_project whatIsBuilding folder)
 
     set(test_include_dir ${MICROMOCK_INC_FOLDER} ${TESTRUNNERSWITCHER_INC_FOLDER} ${CTEST_INC_FOLDER} ${UMOCK_C_INC_FOLDER})
     set(logging_files ${CMAKE_SOURCE_DIR}/src/app_logging.c)
-    include_directories(${test_include_dir})
 
     if (WIN32)
         add_definitions(-DUNICODE)
         add_definitions(-D_UNICODE)
         #windows needs this define
         add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-
-        #set_target_properties(${whatIsBuilding} PROPERTIES LINKER_LANGUAGE CXX)
-        #set_target_properties(${whatIsBuilding} PROPERTIES FOLDER ${folder})
     else()
         find_program(MEMORYCHECK_COMMAND valgrind)
         set(MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full" )
@@ -35,7 +31,6 @@ function(build_test_project whatIsBuilding folder)
         ${CMAKE_CURRENT_LIST_DIR}/main.c
         ${logging_files}
     )
-
     compileTargetAsC99(${whatIsBuilding}_exe)
 
     set_target_properties(${whatIsBuilding}_exe
