@@ -5,7 +5,10 @@ cmake_minimum_required(VERSION 3.5)
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-project(lib-util-c)
+project(lib-util-c
+    DESCRIPTION "Library for utilities"
+    LANGUAGES C)
+#project(lib-util-c)
 
 option(lib_util_c_ut "Include unittest in build" OFF)
 option(lib_util_c_sample "Include samples in build" OFF)

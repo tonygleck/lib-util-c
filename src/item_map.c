@@ -235,20 +235,27 @@ const void* item_map_get_item(ITEM_MAP_HANDLE handle, const char* key)
 
         KEY_VALUE_MAPPING* kv_item = handle->value_array[index];
         KEY_VALUE_MAPPING* iterator = kv_item;
-        result = kv_item->value;
-        while (strcmp(iterator->key, key) != 0)
+        if (iterator != NULL)
+        {
+            result = kv_item->value;
+            while (strcmp(iterator->key, key) != 0)
+            {
+                result = NULL;
+                if (iterator->next == NULL)
+                {
+                    // Didn't find an item
+                    break;
+                }
+                else
+                {
+                    iterator = iterator->next;
+                    result = iterator->value;
+                }
+            }
+        }
+        else
         {
             result = NULL;
-            if (iterator->next == NULL)
-            {
-                // Didn't find an item
-                break;
-            }
-            else
-            {
-                iterator = iterator->next;
-                result = iterator->value;
-            }
         }
     }
     return result;

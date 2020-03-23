@@ -186,6 +186,56 @@ TEST_FUNCTION(item_map_create_fail)
     umock_c_negative_tests_deinit();
 }
 
+TEST_FUNCTION(item_map_add_item_handle_NULL_fail)
+{
+    // arrange
+
+    // act
+    int value = 22;
+    int result = item_map_add_item(NULL, "test_key", &value, sizeof(int));
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+TEST_FUNCTION(item_map_add_item_key_NULL_fail)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    umock_c_reset_all_calls();
+
+    // act
+    int value = 22;
+    int result = item_map_add_item(handle, NULL, &value, sizeof(int));
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
+TEST_FUNCTION(item_map_add_item_value_fail)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    umock_c_reset_all_calls();
+
+    // act
+    int result = item_map_add_item(handle, "test_key", NULL, sizeof(int));
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
 TEST_FUNCTION(item_map_add_item_succeed)
 {
     // arrange
@@ -324,6 +374,27 @@ TEST_FUNCTION(item_map_get_item_succeed)
     item_map_destroy(handle);
 }
 
+TEST_FUNCTION(item_map_get_item_not_found_fail)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    int value = 22;
+    (void)item_map_add_item(handle, "test_key1", &value, sizeof(int));
+    int value_2 = 77;
+    (void)item_map_add_item(handle, "test_key2", &value_2, sizeof(int));
+    umock_c_reset_all_calls();
+
+    // act
+    const int* result = (const int*)item_map_get_item(handle, "test_key3");
+
+    // assert
+    ASSERT_IS_NULL(result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
 TEST_FUNCTION(item_map_size_handle_NULL_fail)
 {
     // arrange
@@ -420,6 +491,41 @@ TEST_FUNCTION(item_map_remove_item_no_item_succeed)
     item_map_destroy(handle);
 }
 
+TEST_FUNCTION(item_map_remove_handle_NULL_fail)
+{
+    // arrange
+
+    // act
+    int result = item_map_remove_item(NULL, "no_item");
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+TEST_FUNCTION(item_map_remove_item_key_NULL_fail)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    int value = 22;
+    (void)item_map_add_item(handle, "aaaaaa", &value, sizeof(int));
+    int value_2 = 77;
+    (void)item_map_add_item(handle, "aaaba", &value_2, sizeof(int));
+    umock_c_reset_all_calls();
+
+    // act
+    int result = item_map_remove_item(handle, NULL);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
 TEST_FUNCTION(item_map_remove_item_collision_succeed)
 {
     // arrange
@@ -436,6 +542,32 @@ TEST_FUNCTION(item_map_remove_item_collision_succeed)
 
     // act
     int result = item_map_remove_item(handle, "aaaba");
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_map_destroy(handle);
+}
+
+TEST_FUNCTION(item_map_remove_item_succeed)
+{
+    // arrange
+    ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
+    int value = 22;
+    (void)item_map_add_item(handle, "rainy_day", &value, sizeof(int));
+    int value_2 = 77;
+    (void)item_map_add_item(handle, "sunny_day", &value_2, sizeof(int));
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+
+    // act
+    int result = item_map_remove_item(handle, "rainy_day");
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
