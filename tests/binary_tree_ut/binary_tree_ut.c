@@ -23,7 +23,7 @@ static void my_mem_shim_free(void* ptr)
 #endif
 
 // Include the test tools.
-#include "testrunnerswitcher.h"
+#include "ctest.h"
 #include "azure_macro_utils/macro_utils.h"
 #include "umock_c/umock_c.h"
 
@@ -38,7 +38,7 @@ MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    CTEST_ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
 static const NODE_KEY INSERT_FOR_NO_ROTATION[] = { 0xa, 0xb, 0x5, 0x7, 0xc, 0x3 };
@@ -60,15 +60,10 @@ static const NODE_KEY INVALID_ITEM = 0x01;
 
 static void* DATA_VALUE = (void*)0x11;
 
-static TEST_MUTEX_HANDLE g_testByTest;
+CTEST_BEGIN_TEST_SUITE(binary_tree_ut)
 
-BEGIN_TEST_SUITE(binary_tree_ut)
-
-TEST_SUITE_INITIALIZE(suite_init)
+CTEST_SUITE_INITIALIZE()
 {
-    g_testByTest = TEST_MUTEX_CREATE();
-    ASSERT_IS_NOT_NULL(g_testByTest);
-
     (void)umock_c_init(on_umock_c_error);
 
     REGISTER_UMOCK_ALIAS_TYPE(BINARY_TREE_HANDLE, void*);
@@ -78,26 +73,18 @@ TEST_SUITE_INITIALIZE(suite_init)
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
-TEST_SUITE_CLEANUP(suite_cleanup)
+CTEST_SUITE_CLEANUP()
 {
     umock_c_deinit();
-
-    TEST_MUTEX_DESTROY(g_testByTest);
 }
 
-TEST_FUNCTION_INITIALIZE(method_init)
+CTEST_FUNCTION_INITIALIZE()
 {
-    if (TEST_MUTEX_ACQUIRE(g_testByTest))
-    {
-        ASSERT_FAIL("Could not acquire test serialization mutex.");
-    }
-
     umock_c_reset_all_calls();
 }
 
-TEST_FUNCTION_CLEANUP(method_cleanup)
+CTEST_FUNCTION_CLEANUP()
 {
-    TEST_MUTEX_RELEASE(g_testByTest);
 }
 
 static void remove_callback(void* data)
@@ -106,14 +93,14 @@ static void remove_callback(void* data)
     (void)data;
 }
 
-static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
+static void CTEST_ASSERT_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
 {
     char* visual_check = binary_tree_construct_visual(handle);
-    ASSERT_ARE_EQUAL(char_ptr, expected, visual_check);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, expected, visual_check);
     free(visual_check);
 }
 
-    TEST_FUNCTION(binary_tree_create_succeed)
+    CTEST_FUNCTION(binary_tree_create_succeed)
     {
         //arrange
 
@@ -122,13 +109,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
 
 
         //assert
-        ASSERT_IS_NOT_NULL(result);
+        CTEST_ASSERT_IS_NOT_NULL(result);
 
         //cleanup
         binary_tree_destroy(result);
     }
 
-    TEST_FUNCTION(binary_tree_destroy_succeed)
+    CTEST_FUNCTION(binary_tree_destroy_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE result = binary_tree_create();
@@ -141,7 +128,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_destroy_handle_NULL_succeed)
+    CTEST_FUNCTION(binary_tree_destroy_handle_NULL_succeed)
     {
         //arrange
 
@@ -153,7 +140,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_insert_handle_NULL_fail)
+    CTEST_FUNCTION(binary_tree_insert_handle_NULL_fail)
     {
         //arrange
         NODE_KEY insert_key = 0x4;
@@ -162,12 +149,12 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_insert(NULL, insert_key, NULL);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_insert_succeed)
+    CTEST_FUNCTION(binary_tree_insert_succeed)
     {
         //arrange
         NODE_KEY insert_key = 0x4;
@@ -177,15 +164,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_insert(handle, insert_key, NULL);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
-        assert_visual_check(handle, "4");
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_visual_check(handle, "4");
 
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_insert_right_rotate_succeed)
+    CTEST_FUNCTION(binary_tree_insert_right_rotate_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -197,15 +184,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
             int result = binary_tree_insert(handle, INSERT_FOR_RIGHT_ROTATION[index], DATA_VALUE);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
         }
-        assert_visual_check(handle, VISUAL_RIGHT_ROTATION);
+        CTEST_ASSERT_visual_check(handle, VISUAL_RIGHT_ROTATION);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_insert_right_left_rotate_succeed)
+    CTEST_FUNCTION(binary_tree_insert_right_left_rotate_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -217,15 +204,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
             int result = binary_tree_insert(handle, INSERT_FOR_RIGHT_LEFT_ROTATION[index], DATA_VALUE);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
         }
-        assert_visual_check(handle, VISUAL_RIGHT_LEFT_ROTATION);
+        CTEST_ASSERT_visual_check(handle, VISUAL_RIGHT_LEFT_ROTATION);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_insert_left_right_rotate_succeed)
+    CTEST_FUNCTION(binary_tree_insert_left_right_rotate_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -237,15 +224,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
             int result = binary_tree_insert(handle, INSERT_FOR_LEFT_RIGHT_ROTATION[index], DATA_VALUE);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
         }
-        assert_visual_check(handle, VISUAL_LEFT_RIGHT_ROTATION);
+        CTEST_ASSERT_visual_check(handle, VISUAL_LEFT_RIGHT_ROTATION);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_insert_left_rotate_succeed)
+    CTEST_FUNCTION(binary_tree_insert_left_rotate_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -260,15 +247,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
             int result = binary_tree_insert(handle, INSERT_FOR_LEFT_ROTATION[index], DATA_VALUE);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
         }
-        assert_visual_check(handle, VISUAL_LEFT_ROTATION);
+        CTEST_ASSERT_visual_check(handle, VISUAL_LEFT_ROTATION);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_insert_left_rotate_2_succeed)
+    CTEST_FUNCTION(binary_tree_insert_left_rotate_2_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -283,28 +270,28 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
             int result = binary_tree_insert(handle, INSERT_FOR_LEFT_ROTATION[index], DATA_VALUE);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
         }
-        assert_visual_check(handle, VISUAL_LEFT_ROTATION);
+        CTEST_ASSERT_visual_check(handle, VISUAL_LEFT_ROTATION);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
 
-    TEST_FUNCTION(binary_tree_find_handle_NULL_fail)
+    CTEST_FUNCTION(binary_tree_find_handle_NULL_fail)
     {
         //arrange
 
         //act
         void* found_item = binary_tree_find(NULL, INSERT_FOR_NO_ROTATION[0]);
 
-        ASSERT_IS_NULL(found_item);
+        CTEST_ASSERT_IS_NULL(found_item);
 
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_find_succeed)
+    CTEST_FUNCTION(binary_tree_find_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -318,13 +305,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         void* found_item = binary_tree_find(handle, INSERT_FOR_NO_ROTATION[count-1]);
 
         //assert
-        ASSERT_IS_NOT_NULL(found_item);
+        CTEST_ASSERT_IS_NOT_NULL(found_item);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_find_no_items_succeed)
+    CTEST_FUNCTION(binary_tree_find_no_items_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -333,13 +320,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         void* found_item = binary_tree_find(handle, INSERT_FOR_NO_ROTATION[0]);
 
         //assert
-        ASSERT_IS_NULL(found_item);
+        CTEST_ASSERT_IS_NULL(found_item);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_find_invalid_item_succeed)
+    CTEST_FUNCTION(binary_tree_find_invalid_item_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -353,13 +340,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         void* found_item = binary_tree_find(handle, INVALID_ITEM);
 
         //assert
-        ASSERT_IS_NULL(found_item);
+        CTEST_ASSERT_IS_NULL(found_item);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_find_invalid_item_2_succeed)
+    CTEST_FUNCTION(binary_tree_find_invalid_item_2_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -373,13 +360,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         void* found_item = binary_tree_find(handle, 0x20);
 
         //assert
-        ASSERT_IS_NULL(found_item);
+        CTEST_ASSERT_IS_NULL(found_item);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_item_count_handle_NULL_fail)
+    CTEST_FUNCTION(binary_tree_item_count_handle_NULL_fail)
     {
         //arrange
 
@@ -387,12 +374,12 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         size_t item_count = binary_tree_item_count(NULL);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(size_t, 0, item_count);
+        CTEST_ASSERT_ARE_NOT_EQUAL(size_t, 0, item_count);
 
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_item_count_succeed)
+    CTEST_FUNCTION(binary_tree_item_count_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -406,13 +393,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         size_t item_count = binary_tree_item_count(handle);
 
         //assert
-        ASSERT_ARE_EQUAL(size_t, count, item_count);
+        CTEST_ASSERT_ARE_EQUAL(size_t, count, item_count);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_height_handle_NULL_fail)
+    CTEST_FUNCTION(binary_tree_height_handle_NULL_fail)
     {
         //arrange
 
@@ -420,12 +407,12 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         size_t item_count = binary_tree_height(NULL);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(size_t, 0, item_count);
+        CTEST_ASSERT_ARE_NOT_EQUAL(size_t, 0, item_count);
 
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_height_succeed)
+    CTEST_FUNCTION(binary_tree_height_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -439,13 +426,13 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         size_t item_count = binary_tree_height(handle);
 
         //assert
-        ASSERT_ARE_EQUAL(size_t, INSERT_NO_ROTATION_HEIGHT, item_count);
+        CTEST_ASSERT_ARE_EQUAL(size_t, INSERT_NO_ROTATION_HEIGHT, item_count);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_handle_NULL_fail)
+    CTEST_FUNCTION(binary_tree_remove_handle_NULL_fail)
     {
         //arrange
 
@@ -453,12 +440,12 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(NULL, INSERT_FOR_NO_ROTATION[0], remove_callback);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_remove_two_children_succeed)
+    CTEST_FUNCTION(binary_tree_remove_two_children_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -472,7 +459,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION[2], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
         // Use as verification since it touches every node
         binary_tree_print(handle);
@@ -481,7 +468,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_two_children_2_succeed)
+    CTEST_FUNCTION(binary_tree_remove_two_children_2_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -497,7 +484,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, REMOVE_TWO_CHILDREN_2[1], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
         // Use as verification since it touches every node
         binary_tree_print(handle);
@@ -506,7 +493,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_one_child_succeed)
+    CTEST_FUNCTION(binary_tree_remove_one_child_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -520,7 +507,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION[1], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
         // Use as verification since it touches every node
         binary_tree_print(handle);
@@ -529,7 +516,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_one_child_2_succeed)
+    CTEST_FUNCTION(binary_tree_remove_one_child_2_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -543,7 +530,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION_2[1], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
         // Use as verification since it touches every node
         binary_tree_print(handle);
@@ -552,7 +539,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_node_no_children_2_succeed)
+    CTEST_FUNCTION(binary_tree_remove_node_no_children_2_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -568,14 +555,14 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION[count-1], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
-        assert_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_node_no_children_succeed)
+    CTEST_FUNCTION(binary_tree_remove_node_no_children_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -591,15 +578,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION[3], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
-        assert_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
 
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_root_succeed)
+    CTEST_FUNCTION(binary_tree_remove_root_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -615,15 +602,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION[0], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
-        assert_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
+        CTEST_ASSERT_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_root_2_succeed)
+    CTEST_FUNCTION(binary_tree_remove_root_2_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -639,15 +626,15 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INSERT_FOR_NO_ROTATION[0], remove_callback);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
-        assert_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
+        CTEST_ASSERT_visual_check(handle, VISUAL_NO_ROTATION_AFTER_REMOVE);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_remove_item_not_found_succeed)
+    CTEST_FUNCTION(binary_tree_remove_item_not_found_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -661,25 +648,25 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         int result = binary_tree_remove(handle, INVALID_ITEM, remove_callback);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
         binary_tree_destroy(handle);
     }
 
-    TEST_FUNCTION(binary_tree_construct_visual_handle_NULL_fail)
+    CTEST_FUNCTION(binary_tree_construct_visual_handle_NULL_fail)
     {
         //arrange
         //act
         char* result = binary_tree_construct_visual(NULL);
 
         //assert
-        ASSERT_IS_NULL(result);
+        CTEST_ASSERT_IS_NULL(result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(binary_tree_construct_visual_no_items_succeed)
+    CTEST_FUNCTION(binary_tree_construct_visual_no_items_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -688,8 +675,8 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         char* result = binary_tree_construct_visual(handle);
 
         //assert
-        ASSERT_IS_NOT_NULL(result);
-        ASSERT_ARE_EQUAL(char_ptr, "", result);
+        CTEST_ASSERT_IS_NOT_NULL(result);
+        CTEST_ASSERT_ARE_EQUAL(char_ptr, "", result);
 
         //cleanup
         free(result);
@@ -697,7 +684,7 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
     }
 
 
-    TEST_FUNCTION(binary_tree_construct_visual_succeed)
+    CTEST_FUNCTION(binary_tree_construct_visual_succeed)
     {
         //arrange
         BINARY_TREE_HANDLE handle = binary_tree_create();
@@ -711,12 +698,12 @@ static void assert_visual_check(BINARY_TREE_HANDLE handle, const char* expected)
         char* result = binary_tree_construct_visual(handle);
 
         //assert
-        ASSERT_IS_NOT_NULL(result);
-        ASSERT_ARE_EQUAL(char_ptr, VISUAL_NO_ROTATION, result);
+        CTEST_ASSERT_IS_NOT_NULL(result);
+        CTEST_ASSERT_ARE_EQUAL(char_ptr, VISUAL_NO_ROTATION, result);
 
         //cleanup
         free(result);
         binary_tree_destroy(handle);
     }
 
-END_TEST_SUITE(binary_tree_ut)
+CTEST_END_TEST_SUITE(binary_tree_ut)

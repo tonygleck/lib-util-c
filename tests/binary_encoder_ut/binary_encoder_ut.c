@@ -13,7 +13,7 @@
 #endif
 
 // Include the test tools.
-#include "testrunnerswitcher.h"
+#include "ctest.h"
 #include "azure_macro_utils/macro_utils.h"
 #include "umock_c/umock_c.h"
 #include "umock_c/umocktypes_charptr.h"
@@ -28,7 +28,7 @@ MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    CTEST_ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
 static const struct
@@ -124,40 +124,28 @@ static const struct
     { 32, (const unsigned char*)"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20", "aebagbafaydqqcikbmga2dqpcaireeyuculbogazdinryhi6d4qa====" },
 };
 
-static TEST_MUTEX_HANDLE g_testByTest;
+CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
 
-BEGIN_TEST_SUITE(binary_encoder_ut)
-
-    TEST_SUITE_INITIALIZE(suite_init)
+    CTEST_SUITE_INITIALIZE()
     {
-        g_testByTest = TEST_MUTEX_CREATE();
-        ASSERT_IS_NOT_NULL(g_testByTest);
-
         (void)umock_c_init(on_umock_c_error);
     }
 
-    TEST_SUITE_CLEANUP(suite_cleanup)
+    CTEST_SUITE_CLEANUP()
     {
         umock_c_deinit();
-
-        TEST_MUTEX_DESTROY(g_testByTest);
     }
 
-    TEST_FUNCTION_INITIALIZE(method_init)
+    CTEST_FUNCTION_INITIALIZE()
     {
-        if (TEST_MUTEX_ACQUIRE(g_testByTest))
-        {
-            ASSERT_FAIL("Could not acquire test serialization mutex.");
-        }
         umock_c_reset_all_calls();
     }
 
-    TEST_FUNCTION_CLEANUP(method_cleanup)
+    CTEST_FUNCTION_CLEANUP()
     {
-        TEST_MUTEX_RELEASE(g_testByTest);
     }
 
-    TEST_FUNCTION(bin_encoder_32_encode_source_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_32_encode_source_NULL_fail)
     {
         //arrange
         char output[32];
@@ -167,12 +155,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_encode(NULL, 10, output, &output_len);
 
         //assert
-        ASSERT_ARE_EQUAL(int, -1, result);
+        CTEST_ASSERT_ARE_EQUAL(int, -1, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_encode_size_0_fail)
+    CTEST_FUNCTION(bin_encoder_32_encode_size_0_fail)
     {
         //arrange
         char output[32];
@@ -183,12 +171,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_encode(source, 0, output, &output_len);
 
         //assert
-        ASSERT_ARE_EQUAL(int, -1, result);
+        CTEST_ASSERT_ARE_EQUAL(int, -1, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_encode_success)
+    CTEST_FUNCTION(bin_encoder_32_encode_success)
     {
         //arrange
         char output[64];
@@ -201,15 +189,15 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
             int result = bin_encoder_32_encode(test_base32_value[index].input_data, test_base32_value[index].input_len, output, &output_len);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result, "bin_encoder_32_encode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(int, strlen(test_base32_value[index].base32_data), output_len, "bin_encoder_32_encode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(char_ptr, test_base32_value[index].base32_data, output, "bin_encoder_32_encode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result, "bin_encoder_32_encode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, strlen(test_base32_value[index].base32_data), output_len, "bin_encoder_32_encode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(char_ptr, test_base32_value[index].base32_data, output, "bin_encoder_32_encode failure in test %lu", (unsigned long)index);
 
             //cleanup
         }
     }
 
-    TEST_FUNCTION(bin_encoder_32_encode_output_size_fail)
+    CTEST_FUNCTION(bin_encoder_32_encode_output_size_fail)
     {
         //arrange
         char output[64];
@@ -220,13 +208,13 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_encode(test_base32_value[target_index].input_data, test_base32_value[target_index].input_len, output, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(int, strlen(test_base32_value[target_index].base32_data), output_len);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, strlen(test_base32_value[target_index].base32_data), output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_source_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_32_decode_source_NULL_fail)
     {
         //arrange
         char output[32];
@@ -236,12 +224,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_decode(NULL, output, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_output_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_32_decode_output_NULL_fail)
     {
         //arrange
         const char* source = "aaaaaaaaaaaaaaaa";
@@ -251,13 +239,13 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_decode(source, NULL, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(size_t, 10, output_len);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(size_t, 10, output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_success)
+    CTEST_FUNCTION(bin_encoder_32_decode_success)
     {
         //arrange
         unsigned char output[64];
@@ -270,15 +258,15 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
             int result = bin_encoder_32_decode(test_base32_value[index].base32_data, output, &output_len);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
-            ASSERT_ARE_EQUAL(int, 0, memcmp(test_base32_value[index].input_data, output, output_len), "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(int, test_base32_value[index].input_len, output_len, "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(test_base32_value[index].input_data, output, output_len), "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, test_base32_value[index].input_len, output_len, "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
 
             //cleanup
         }
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_partial_source_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_32_decode_partial_source_NULL_fail)
     {
         //arrange
         char output[32];
@@ -288,12 +276,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_decode_partial(NULL, 32, output, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_partial_output_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_32_decode_partial_output_NULL_fail)
     {
         //arrange
         const char* source = "aaaaaaaaaaaaaaaa_DO_NOT_ENCODE";
@@ -303,13 +291,13 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_decode_partial(source, 17, NULL, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(size_t, 10, output_len);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(size_t, 10, output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_partial_string_success)
+    CTEST_FUNCTION(bin_encoder_32_decode_partial_string_success)
     {
         //arrange
         const char* source = "AAAAAAAAAAAAAA==_DO_NOT_ENCODE";
@@ -321,14 +309,14 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_decode_partial(source, 16, output, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(int, 0, memcmp(src_encoded, output, output_len), "bin_encoder_32_decode_partial failure in test");
-        ASSERT_ARE_EQUAL(size_t, 10, output_len);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(src_encoded, output, output_len), "bin_encoder_32_decode_partial failure in test");
+        CTEST_ASSERT_ARE_EQUAL(size_t, 10, output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_32_decode_partial_success)
+    CTEST_FUNCTION(bin_encoder_32_decode_partial_success)
     {
         //arrange
         unsigned char output[64];
@@ -342,15 +330,15 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
             int result = bin_encoder_32_decode_partial(test_base32_value[index].base32_data, data_size, output, &output_len);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
-            ASSERT_ARE_EQUAL(int, 0, memcmp(test_base32_value[index].input_data, output, output_len), "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(int, test_base32_value[index].input_len, output_len, "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(test_base32_value[index].input_data, output, output_len), "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, test_base32_value[index].input_len, output_len, "bin_encoder_32_decode failure in test %lu", (unsigned long)index);
 
             //cleanup
         }
     }
 
-    TEST_FUNCTION(bin_encoder_64_encode_source_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_64_encode_source_NULL_fail)
     {
         //arrange
         char output[32];
@@ -360,12 +348,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_encode(NULL, 10, output, &output_len);
 
         //assert
-        ASSERT_ARE_EQUAL(int, -1, result);
+        CTEST_ASSERT_ARE_EQUAL(int, -1, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_encode_size_0_fail)
+    CTEST_FUNCTION(bin_encoder_64_encode_size_0_fail)
     {
         //arrange
         char output[32];
@@ -376,12 +364,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_encode(source, 0, output, &output_len);
 
         //assert
-        ASSERT_ARE_EQUAL(int, -1, result);
+        CTEST_ASSERT_ARE_EQUAL(int, -1, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_encode_success)
+    CTEST_FUNCTION(bin_encoder_64_encode_success)
     {
         //arrange
         char output[64];
@@ -394,15 +382,15 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
             int result = bin_encoder_64_encode(test_base64_value[index].input_data, test_base64_value[index].input_len, output, &output_len);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result, "bin_encoder_64_encode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(int, strlen(test_base64_value[index].base64_data), output_len, "bin_encoder_64_encode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(char_ptr, test_base64_value[index].base64_data, output, "bin_encoder_64_encode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result, "bin_encoder_64_encode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, strlen(test_base64_value[index].base64_data), output_len, "bin_encoder_64_encode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(char_ptr, test_base64_value[index].base64_data, output, "bin_encoder_64_encode failure in test %lu", (unsigned long)index);
 
             //cleanup
         }
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_source_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_64_decode_source_NULL_fail)
     {
         //arrange
         char output[32];
@@ -412,12 +400,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_decode(NULL, output, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_output_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_64_decode_output_NULL_fail)
     {
         //arrange
         const char* source = "AAAAAAAAAA==";
@@ -427,13 +415,13 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_decode(source, NULL, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(size_t, 7, output_len);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(size_t, 7, output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_success)
+    CTEST_FUNCTION(bin_encoder_64_decode_success)
     {
         //arrange
         unsigned char output[64];
@@ -446,15 +434,15 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
             int result = bin_encoder_64_decode(test_base64_value[index].base64_data, output, &output_len);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
-            ASSERT_ARE_EQUAL(int, 0, memcmp(test_base64_value[index].input_data, output, output_len), "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(int, test_base64_value[index].input_len, output_len, "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(test_base64_value[index].input_data, output, output_len), "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, test_base64_value[index].input_len, output_len, "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
 
             //cleanup
         }
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_partial_source_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_64_decode_partial_source_NULL_fail)
     {
         //arrange
         char output[32];
@@ -464,12 +452,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_decode_partial(NULL, 0, output, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_partial_output_NULL_fail)
+    CTEST_FUNCTION(bin_encoder_64_decode_partial_output_NULL_fail)
     {
         //arrange
         const char* source = "AAAAAAAAAA==";
@@ -479,13 +467,13 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_decode_partial(source, strlen(source), NULL, &output_len);
 
         //assert
-        ASSERT_ARE_NOT_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(size_t, 7, output_len);
+        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(size_t, 7, output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_partial_string_success)
+    CTEST_FUNCTION(bin_encoder_64_decode_partial_string_success)
     {
         //arrange
         const char* source = "AAAAAAAAAA==_DO_NOT_ENCODE";
@@ -496,13 +484,13 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_64_decode_partial(source, 12, output, &output_len);
 
         //assert
-        ASSERT_ARE_EQUAL(int, 0, result);
-        ASSERT_ARE_EQUAL(size_t, 7, output_len);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(size_t, 7, output_len);
 
         //cleanup
     }
 
-    TEST_FUNCTION(bin_encoder_64_decode_partial_success)
+    CTEST_FUNCTION(bin_encoder_64_decode_partial_success)
     {
         //arrange
         unsigned char output[64];
@@ -515,12 +503,12 @@ BEGIN_TEST_SUITE(binary_encoder_ut)
             int result = bin_encoder_64_decode_partial(test_base64_value[index].base64_data, strlen(test_base64_value[index].base64_data), output, &output_len);
 
             //assert
-            ASSERT_ARE_EQUAL(int, 0, result);
-            ASSERT_ARE_EQUAL(int, 0, memcmp(test_base64_value[index].input_data, output, output_len), "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
-            ASSERT_ARE_EQUAL(int, test_base64_value[index].input_len, output_len, "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(test_base64_value[index].input_data, output, output_len), "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
+            CTEST_ASSERT_ARE_EQUAL(int, test_base64_value[index].input_len, output_len, "bin_encoder_64_decode failure in test %lu", (unsigned long)index);
 
             //cleanup
         }
     }
 
-END_TEST_SUITE(binary_encoder_ut)
+CTEST_END_TEST_SUITE(binary_encoder_ut)
