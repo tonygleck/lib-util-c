@@ -8,7 +8,7 @@
 #include <stddef.h>
 #endif
 
-#include "testrunnerswitcher.h"
+#include "ctest.h"
 #include "azure_macro_utils/macro_utils.h"
 
 #include "umock_c/umock_c.h"
@@ -57,21 +57,17 @@ static int my_clone_string(char** target, const char* source)
     return 0;
 }
 
-static TEST_MUTEX_HANDLE test_serialize_mutex;
 MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    CTEST_ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
-BEGIN_TEST_SUITE(item_map_ut)
+CTEST_BEGIN_TEST_SUITE(item_map_ut)
 
-TEST_SUITE_INITIALIZE(suite_init)
+CTEST_SUITE_INITIALIZE()
 {
-    test_serialize_mutex = TEST_MUTEX_CREATE();
-    ASSERT_IS_NOT_NULL(test_serialize_mutex);
-
     umock_c_init(on_umock_c_error);
 
     REGISTER_UMOCK_ALIAS_TYPE(ITEM_MAP_HANDLE, void*);
@@ -86,25 +82,18 @@ TEST_SUITE_INITIALIZE(suite_init)
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(clone_string, __LINE__);
 }
 
-TEST_SUITE_CLEANUP(suite_cleanup)
+CTEST_SUITE_CLEANUP()
 {
     umock_c_deinit();
-    TEST_MUTEX_DESTROY(test_serialize_mutex);
 }
 
-TEST_FUNCTION_INITIALIZE(method_init)
+CTEST_FUNCTION_INITIALIZE()
 {
-    if (TEST_MUTEX_ACQUIRE(g_testByTest))
-    {
-        ASSERT_FAIL("Could not acquire test serialization mutex.");
-    }
-
     umock_c_reset_all_calls();
 }
 
-TEST_FUNCTION_CLEANUP(method_cleanup)
+CTEST_FUNCTION_CLEANUP()
 {
-    TEST_MUTEX_RELEASE(g_testByTest);
 }
 
 static void setup_item_map_add_item_mocks(void)
@@ -114,7 +103,7 @@ static void setup_item_map_add_item_mocks(void)
     STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
 }
 
-TEST_FUNCTION(item_map_create_succeed)
+CTEST_FUNCTION(item_map_create_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE result;
@@ -126,14 +115,14 @@ TEST_FUNCTION(item_map_create_succeed)
     result = item_map_create(10, map_destroy_callback, NULL, NULL);
 
     // assert
-    ASSERT_IS_NOT_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_IS_NOT_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(result);
 }
 
-TEST_FUNCTION(item_map_create_destroy_cb_NULL_succeed)
+CTEST_FUNCTION(item_map_create_destroy_cb_NULL_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE result;
@@ -145,20 +134,20 @@ TEST_FUNCTION(item_map_create_destroy_cb_NULL_succeed)
     result = item_map_create(20, NULL, NULL, NULL);
 
     // assert
-    ASSERT_IS_NOT_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_IS_NOT_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(result);
 }
 
-TEST_FUNCTION(item_map_create_fail)
+CTEST_FUNCTION(item_map_create_fail)
 {
     // arrange
     ITEM_MAP_HANDLE result;
 
     int negativeTestsInitResult = umock_c_negative_tests_init();
-    ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
     umock_c_reset_all_calls();
 
     STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
@@ -178,7 +167,7 @@ TEST_FUNCTION(item_map_create_fail)
             result = item_map_create(20, map_destroy_callback, NULL, NULL);
 
             // assert
-            ASSERT_IS_NULL(result);
+            CTEST_ASSERT_IS_NULL(result);
         }
     }
 
@@ -186,7 +175,7 @@ TEST_FUNCTION(item_map_create_fail)
     umock_c_negative_tests_deinit();
 }
 
-TEST_FUNCTION(item_map_add_item_handle_NULL_fail)
+CTEST_FUNCTION(item_map_add_item_handle_NULL_fail)
 {
     // arrange
 
@@ -195,13 +184,13 @@ TEST_FUNCTION(item_map_add_item_handle_NULL_fail)
     int result = item_map_add_item(NULL, "test_key", &value, sizeof(int));
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(item_map_add_item_key_NULL_fail)
+CTEST_FUNCTION(item_map_add_item_key_NULL_fail)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -212,14 +201,14 @@ TEST_FUNCTION(item_map_add_item_key_NULL_fail)
     int result = item_map_add_item(handle, NULL, &value, sizeof(int));
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_add_item_value_fail)
+CTEST_FUNCTION(item_map_add_item_value_fail)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -229,14 +218,14 @@ TEST_FUNCTION(item_map_add_item_value_fail)
     int result = item_map_add_item(handle, "test_key", NULL, sizeof(int));
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_add_item_succeed)
+CTEST_FUNCTION(item_map_add_item_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -249,20 +238,20 @@ TEST_FUNCTION(item_map_add_item_succeed)
     int result = item_map_add_item(handle, "test_key", &value, sizeof(int));
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_add_item_fail)
+CTEST_FUNCTION(item_map_add_item_fail)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
 
     int negativeTestsInitResult = umock_c_negative_tests_init();
-    ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
     umock_c_reset_all_calls();
 
     setup_item_map_add_item_mocks();
@@ -282,7 +271,7 @@ TEST_FUNCTION(item_map_add_item_fail)
             int result = item_map_add_item(handle, "test_key", &value, sizeof(int));
 
             // assert
-            ASSERT_ARE_NOT_EQUAL(int, 0, result);
+            CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
         }
     }
     // cleanup
@@ -290,7 +279,7 @@ TEST_FUNCTION(item_map_add_item_fail)
     umock_c_negative_tests_deinit();
 }
 
-TEST_FUNCTION(item_map_add_item_collision_succeed)
+CTEST_FUNCTION(item_map_add_item_collision_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -306,14 +295,14 @@ TEST_FUNCTION(item_map_add_item_collision_succeed)
     result = item_map_add_item(handle, "aaaba", &value, sizeof(int));
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_add_item_collision_fail)
+CTEST_FUNCTION(item_map_add_item_collision_fail)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -331,14 +320,14 @@ TEST_FUNCTION(item_map_add_item_collision_fail)
     result = item_map_add_item(handle, "aaaba", &value, sizeof(int));
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_get_item_handle_NULL_fail)
+CTEST_FUNCTION(item_map_get_item_handle_NULL_fail)
 {
     // arrange
 
@@ -346,13 +335,13 @@ TEST_FUNCTION(item_map_get_item_handle_NULL_fail)
     const int* result = (const int*)item_map_get_item(NULL, "test_key2");
 
     // assert
-    ASSERT_IS_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_IS_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(item_map_get_item_succeed)
+CTEST_FUNCTION(item_map_get_item_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -366,15 +355,15 @@ TEST_FUNCTION(item_map_get_item_succeed)
     const int* result = (const int*)item_map_get_item(handle, "test_key2");
 
     // assert
-    ASSERT_IS_NOT_NULL(result);
-    ASSERT_ARE_EQUAL(int, value_2, *result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_IS_NOT_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(int, value_2, *result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_get_item_not_found_fail)
+CTEST_FUNCTION(item_map_get_item_not_found_fail)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -388,14 +377,14 @@ TEST_FUNCTION(item_map_get_item_not_found_fail)
     const int* result = (const int*)item_map_get_item(handle, "test_key3");
 
     // assert
-    ASSERT_IS_NULL(result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_IS_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_size_handle_NULL_fail)
+CTEST_FUNCTION(item_map_size_handle_NULL_fail)
 {
     // arrange
 
@@ -403,13 +392,13 @@ TEST_FUNCTION(item_map_size_handle_NULL_fail)
     size_t result = item_map_size(NULL);
 
     // assert
-    ASSERT_ARE_EQUAL(size_t, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(size_t, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(item_map_size_succeed)
+CTEST_FUNCTION(item_map_size_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -423,14 +412,14 @@ TEST_FUNCTION(item_map_size_succeed)
     size_t result = item_map_size(handle);
 
     // assert
-    ASSERT_ARE_EQUAL(size_t, 2, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(size_t, 2, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_size_no_item_succeed)
+CTEST_FUNCTION(item_map_size_no_item_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -440,14 +429,14 @@ TEST_FUNCTION(item_map_size_no_item_succeed)
     size_t result = item_map_size(handle);
 
     // assert
-    ASSERT_ARE_EQUAL(size_t, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(size_t, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_get_item_collision_succeed)
+CTEST_FUNCTION(item_map_get_item_collision_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -461,15 +450,15 @@ TEST_FUNCTION(item_map_get_item_collision_succeed)
     const int* result = (const int*)item_map_get_item(handle, "aaaba");
 
     // assert
-    ASSERT_IS_NOT_NULL(result);
-    ASSERT_ARE_EQUAL(int, value_2, *result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_IS_NOT_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(int, value_2, *result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_remove_item_no_item_succeed)
+CTEST_FUNCTION(item_map_remove_item_no_item_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -483,15 +472,15 @@ TEST_FUNCTION(item_map_remove_item_no_item_succeed)
     int result = item_map_remove_item(handle, "no_item");
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 2, item_map_size(handle));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 2, item_map_size(handle));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_remove_handle_NULL_fail)
+CTEST_FUNCTION(item_map_remove_handle_NULL_fail)
 {
     // arrange
 
@@ -499,13 +488,13 @@ TEST_FUNCTION(item_map_remove_handle_NULL_fail)
     int result = item_map_remove_item(NULL, "no_item");
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(item_map_remove_item_key_NULL_fail)
+CTEST_FUNCTION(item_map_remove_item_key_NULL_fail)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -519,14 +508,14 @@ TEST_FUNCTION(item_map_remove_item_key_NULL_fail)
     int result = item_map_remove_item(handle, NULL);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_remove_item_collision_succeed)
+CTEST_FUNCTION(item_map_remove_item_collision_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -544,15 +533,15 @@ TEST_FUNCTION(item_map_remove_item_collision_succeed)
     int result = item_map_remove_item(handle, "aaaba");
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_remove_item_succeed)
+CTEST_FUNCTION(item_map_remove_item_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -570,15 +559,15 @@ TEST_FUNCTION(item_map_remove_item_succeed)
     int result = item_map_remove_item(handle, "rainy_day");
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 1, item_map_size(handle));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_clear_all_handle_NULL_fail)
+CTEST_FUNCTION(item_map_clear_all_handle_NULL_fail)
 {
     // arrange
 
@@ -586,13 +575,13 @@ TEST_FUNCTION(item_map_clear_all_handle_NULL_fail)
     int result = item_map_clear_all(NULL);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(item_map_clear_all_succeed)
+CTEST_FUNCTION(item_map_clear_all_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -613,15 +602,15 @@ TEST_FUNCTION(item_map_clear_all_succeed)
     int result = item_map_clear_all(handle);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 0, item_map_size(handle));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, item_map_size(handle));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-TEST_FUNCTION(item_map_clear_all_no_items_succeed)
+CTEST_FUNCTION(item_map_clear_all_no_items_succeed)
 {
     // arrange
     ITEM_MAP_HANDLE handle = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -631,12 +620,12 @@ TEST_FUNCTION(item_map_clear_all_no_items_succeed)
     int result = item_map_clear_all(handle);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 0, item_map_size(handle));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, item_map_size(handle));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     item_map_destroy(handle);
 }
 
-END_TEST_SUITE(item_map_ut)
+CTEST_END_TEST_SUITE(item_map_ut)

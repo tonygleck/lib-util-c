@@ -21,7 +21,7 @@ static void my_mem_shim_free(void* ptr)
 }
 
 // Include the test tools.
-#include "testrunnerswitcher.h"
+#include "ctest.h"
 #include "azure_macro_utils/macro_utils.h"
 
 #include "umock_c/umock_c.h"
@@ -42,53 +42,40 @@ MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    CTEST_ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
-static TEST_MUTEX_HANDLE g_testByTest;
+CTEST_BEGIN_TEST_SUITE(crt_extensions_ut)
 
-
-BEGIN_TEST_SUITE(crt_extensions_ut)
-
-TEST_SUITE_INITIALIZE(a)
+CTEST_SUITE_INITIALIZE()
 {
     int result;
-    g_testByTest = TEST_MUTEX_CREATE();
-    ASSERT_IS_NOT_NULL(g_testByTest);
 
     (void)umock_c_init(on_umock_c_error);
 
     result = umocktypes_charptr_register_types();
-    ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
-TEST_SUITE_CLEANUP(suite_cleanup)
+CTEST_SUITE_CLEANUP()
 {
     umock_c_deinit();
-
-    TEST_MUTEX_DESTROY(g_testByTest);
 }
 
-TEST_FUNCTION_INITIALIZE(method_init)
+CTEST_FUNCTION_INITIALIZE()
 {
-    if (TEST_MUTEX_ACQUIRE(g_testByTest))
-    {
-        ASSERT_FAIL("Could not acquire test serialization mutex.");
-    }
-
     umock_c_reset_all_calls();
 }
 
-TEST_FUNCTION_CLEANUP(method_cleanup)
+CTEST_FUNCTION_CLEANUP()
 {
-    TEST_MUTEX_RELEASE(g_testByTest);
 }
 
-TEST_FUNCTION(clone_string_target_NULL_fail)
+CTEST_FUNCTION(clone_string_target_NULL_fail)
 {
     // arrange
 
@@ -96,13 +83,13 @@ TEST_FUNCTION(clone_string_target_NULL_fail)
     int result = clone_string(NULL, TEST_SOURCE_STRING);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_source_NULL_fail)
+CTEST_FUNCTION(clone_string_source_NULL_fail)
 {
     // arrange
     char* target;
@@ -111,13 +98,13 @@ TEST_FUNCTION(clone_string_source_NULL_fail)
     int result = clone_string(&target, NULL);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_succeed)
+CTEST_FUNCTION(clone_string_succeed)
 {
     // arrange
     char* target;
@@ -128,15 +115,15 @@ TEST_FUNCTION(clone_string_succeed)
     int result = clone_string(&target, TEST_SOURCE_STRING);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, TEST_SOURCE_STRING, target);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, TEST_SOURCE_STRING, target);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(target);
 }
 
-TEST_FUNCTION(clone_string_fail)
+CTEST_FUNCTION(clone_string_fail)
 {
     // arrange
     char* target;
@@ -147,13 +134,13 @@ TEST_FUNCTION(clone_string_fail)
     int result = clone_string(&target, TEST_SOURCE_STRING);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_size_source_NULL_fail)
+CTEST_FUNCTION(clone_string_with_size_source_NULL_fail)
 {
     // arrange
     char* target;
@@ -162,13 +149,13 @@ TEST_FUNCTION(clone_string_with_size_source_NULL_fail)
     int result = clone_string_with_size(&target, NULL, 1);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_size_target_NULL_fail)
+CTEST_FUNCTION(clone_string_with_size_target_NULL_fail)
 {
     // arrange
 
@@ -176,13 +163,13 @@ TEST_FUNCTION(clone_string_with_size_target_NULL_fail)
     int result = clone_string_with_size(NULL, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_size_size_0_fail)
+CTEST_FUNCTION(clone_string_with_size_size_0_fail)
 {
     // arrange
     char* target;
@@ -191,13 +178,13 @@ TEST_FUNCTION(clone_string_with_size_size_0_fail)
     int result = clone_string_with_size(&target, TEST_SOURCE_STRING, 0);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_size_success)
+CTEST_FUNCTION(clone_string_with_size_success)
 {
     // arrange
     char* target;
@@ -208,14 +195,14 @@ TEST_FUNCTION(clone_string_with_size_success)
     int result = clone_string_with_size(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(target);
 }
 
-TEST_FUNCTION(clone_string_with_size_fail)
+CTEST_FUNCTION(clone_string_with_size_fail)
 {
     // arrange
     char* target;
@@ -226,13 +213,13 @@ TEST_FUNCTION(clone_string_with_size_fail)
     int result = clone_string_with_size(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_format_target_NULL_fail)
+CTEST_FUNCTION(clone_string_with_format_target_NULL_fail)
 {
     // arrange
 
@@ -240,13 +227,13 @@ TEST_FUNCTION(clone_string_with_format_target_NULL_fail)
     int result = clone_string_with_format(NULL, TEST_SOURCE_STRING_FMT, 42);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_format_format_NULL_fail)
+CTEST_FUNCTION(clone_string_with_format_format_NULL_fail)
 {
     // arrange
     char* target;
@@ -255,13 +242,13 @@ TEST_FUNCTION(clone_string_with_format_format_NULL_fail)
     int result = clone_string_with_format(&target, NULL, 42);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_format_no_len_fail)
+CTEST_FUNCTION(clone_string_with_format_no_len_fail)
 {
     // arrange
     char* target;
@@ -270,13 +257,13 @@ TEST_FUNCTION(clone_string_with_format_no_len_fail)
     int result = clone_string_with_format(&target, "", 42);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_format_success)
+CTEST_FUNCTION(clone_string_with_format_success)
 {
     // arrange
     char* target;
@@ -287,15 +274,15 @@ TEST_FUNCTION(clone_string_with_format_success)
     int result = clone_string_with_format(&target, TEST_SOURCE_STRING_FMT, 42);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, "clone_string_with_format42", target);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, "clone_string_with_format42", target);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(target);
 }
 
-TEST_FUNCTION(clone_string_with_format_fail)
+CTEST_FUNCTION(clone_string_with_format_fail)
 {
     // arrange
     char* target;
@@ -306,14 +293,14 @@ TEST_FUNCTION(clone_string_with_format_fail)
     int result = clone_string_with_format(&target, TEST_SOURCE_STRING_FMT, 42);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(target);
 }
 
-TEST_FUNCTION(clone_string_with_size_format_target_NULL_fail)
+CTEST_FUNCTION(clone_string_with_size_format_target_NULL_fail)
 {
     // arrange
     char* target;
@@ -322,13 +309,13 @@ TEST_FUNCTION(clone_string_with_size_format_target_NULL_fail)
     int result = clone_string_with_size_format(NULL, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_size_format_source_NULL_fail)
+CTEST_FUNCTION(clone_string_with_size_format_source_NULL_fail)
 {
     // arrange
     char* target;
@@ -337,13 +324,13 @@ TEST_FUNCTION(clone_string_with_size_format_source_NULL_fail)
     int result = clone_string_with_size_format(&target, NULL, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(clone_string_with_size_format_success)
+CTEST_FUNCTION(clone_string_with_size_format_success)
 {
     // arrange
     char* target;
@@ -354,15 +341,15 @@ TEST_FUNCTION(clone_string_with_size_format_success)
     int result = clone_string_with_size_format(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, "source_clone_string_with_format7", target);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, "source_clone_string_with_format7", target);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(target);
 }
 
-// TEST_FUNCTION(get_time_value_success)
+// CTEST_FUNCTION(get_time_value_success)
 // {
 //     // arrange
 
@@ -370,10 +357,10 @@ TEST_FUNCTION(clone_string_with_size_format_success)
 //     struct tm* result = get_time_value();
 
 //     // assert
-//     ASSERT_IS_NOT_NULL(result);
-//     ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+//     CTEST_ASSERT_IS_NOT_NULL(result);
+//     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
 //     // cleanup
 // }
 
-END_TEST_SUITE(crt_extensions_ut)
+CTEST_END_TEST_SUITE(crt_extensions_ut)

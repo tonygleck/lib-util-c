@@ -8,7 +8,7 @@
 #include <stddef.h>
 #endif
 
-#include "testrunnerswitcher.h"
+#include "ctest.h"
 #include "azure_macro_utils/macro_utils.h"
 
 #include "umock_c/umock_c.h"
@@ -41,21 +41,17 @@ MOCKABLE_FUNCTION(, void, item_destroy_callback, void*, user_ctx, void*, item);
 
 #define DEFAULT_ALLOC_SIZE       64
 
-static TEST_MUTEX_HANDLE test_serialize_mutex;
 MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
-    ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    CTEST_ASSERT_FAIL("umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
 }
 
-BEGIN_TEST_SUITE(buffer_alloc_ut)
+CTEST_BEGIN_TEST_SUITE(buffer_alloc_ut)
 
-TEST_SUITE_INITIALIZE(suite_init)
+CTEST_SUITE_INITIALIZE()
 {
-    test_serialize_mutex = TEST_MUTEX_CREATE();
-    ASSERT_IS_NOT_NULL(test_serialize_mutex);
-
     umock_c_init(on_umock_c_error);
 
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
@@ -65,28 +61,21 @@ TEST_SUITE_INITIALIZE(suite_init)
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_free, my_mem_shim_free);
 }
 
-TEST_SUITE_CLEANUP(suite_cleanup)
+CTEST_SUITE_CLEANUP()
 {
     umock_c_deinit();
-    TEST_MUTEX_DESTROY(test_serialize_mutex);
 }
 
-TEST_FUNCTION_INITIALIZE(method_init)
+CTEST_FUNCTION_INITIALIZE()
 {
-    if (TEST_MUTEX_ACQUIRE(g_testByTest))
-    {
-        ASSERT_FAIL("Could not acquire test serialization mutex.");
-    }
-
     umock_c_reset_all_calls();
 }
 
-TEST_FUNCTION_CLEANUP(method_cleanup)
+CTEST_FUNCTION_CLEANUP()
 {
-    TEST_MUTEX_RELEASE(g_testByTest);
 }
 
-TEST_FUNCTION(string_buffer_construct_buffer_NULL_fail)
+CTEST_FUNCTION(string_buffer_construct_buffer_NULL_fail)
 {
     // arrange
     const char* src_string = "test_string";
@@ -95,13 +84,13 @@ TEST_FUNCTION(string_buffer_construct_buffer_NULL_fail)
     int result = string_buffer_construct(NULL, src_string);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(string_buffer_construct_value_NULL_fail)
+CTEST_FUNCTION(string_buffer_construct_value_NULL_fail)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -110,13 +99,13 @@ TEST_FUNCTION(string_buffer_construct_value_NULL_fail)
     int result = string_buffer_construct(&buffer, NULL);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(string_buffer_construct_succeed)
+CTEST_FUNCTION(string_buffer_construct_succeed)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -128,15 +117,15 @@ TEST_FUNCTION(string_buffer_construct_succeed)
     int result = string_buffer_construct(&buffer, src_string);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, src_string, buffer.payload);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, src_string, buffer.payload);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(string_buffer_construct_append_string_succeed)
+CTEST_FUNCTION(string_buffer_construct_append_string_succeed)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -151,15 +140,15 @@ TEST_FUNCTION(string_buffer_construct_append_string_succeed)
     int result = string_buffer_construct(&buffer, second_string);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
+CTEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -177,15 +166,15 @@ TEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
     int result = string_buffer_construct(&buffer, second_string);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(string_buffer_construct_malloc_fail)
+CTEST_FUNCTION(string_buffer_construct_malloc_fail)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -197,13 +186,13 @@ TEST_FUNCTION(string_buffer_construct_malloc_fail)
     int result = string_buffer_construct(&buffer, src_string);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(string_buffer_construct_sprintf_buffer_NULL_fail)
+CTEST_FUNCTION(string_buffer_construct_sprintf_buffer_NULL_fail)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -215,13 +204,13 @@ TEST_FUNCTION(string_buffer_construct_sprintf_buffer_NULL_fail)
     int result = string_buffer_construct_sprintf(NULL, fmt_string, value);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(string_buffer_construct_sprintf_format_NULL_fail)
+CTEST_FUNCTION(string_buffer_construct_sprintf_format_NULL_fail)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -232,13 +221,13 @@ TEST_FUNCTION(string_buffer_construct_sprintf_format_NULL_fail)
     int result = string_buffer_construct_sprintf(&buffer, NULL, value);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(string_buffer_construct_sprintf_succeed)
+CTEST_FUNCTION(string_buffer_construct_sprintf_succeed)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -252,15 +241,15 @@ TEST_FUNCTION(string_buffer_construct_sprintf_succeed)
     int result = string_buffer_construct_sprintf(&buffer, fmt_string, value);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
+CTEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -274,13 +263,13 @@ TEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
     int result = string_buffer_construct_sprintf(&buffer, fmt_string, value);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(string_buffer_construct_sprintf_append_string_succeed)
+CTEST_FUNCTION(string_buffer_construct_sprintf_append_string_succeed)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
@@ -296,15 +285,15 @@ TEST_FUNCTION(string_buffer_construct_sprintf_append_string_succeed)
     int result = string_buffer_construct_sprintf(&buffer, second_string, value);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, total_string, buffer.payload);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(byte_buffer_construct_buffer_NULL_fail)
+CTEST_FUNCTION(byte_buffer_construct_buffer_NULL_fail)
 {
     // arrange
     const unsigned char binary_string[] = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
@@ -314,13 +303,13 @@ TEST_FUNCTION(byte_buffer_construct_buffer_NULL_fail)
     int result = byte_buffer_construct(NULL, binary_string, bin_length);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(byte_buffer_construct_value_NULL_succeed)
+CTEST_FUNCTION(byte_buffer_construct_value_NULL_succeed)
 {
     // arrange
     BYTE_BUFFER buffer = { 0 };
@@ -330,13 +319,13 @@ TEST_FUNCTION(byte_buffer_construct_value_NULL_succeed)
     int result = byte_buffer_construct(&buffer, NULL, bin_length);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(byte_buffer_construct_size_0_succeed)
+CTEST_FUNCTION(byte_buffer_construct_size_0_succeed)
 {
     // arrange
     BYTE_BUFFER buffer = { 0 };
@@ -347,13 +336,13 @@ TEST_FUNCTION(byte_buffer_construct_size_0_succeed)
     int result = byte_buffer_construct(&buffer, binary_buff, 0);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(byte_buffer_construct_succeed)
+CTEST_FUNCTION(byte_buffer_construct_succeed)
 {
     // arrange
     BYTE_BUFFER buffer = { 0 };
@@ -366,15 +355,15 @@ TEST_FUNCTION(byte_buffer_construct_succeed)
     int result = byte_buffer_construct(&buffer, binary_buff, bin_length);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 0, memcmp(buffer.payload, binary_buff, buffer.payload_size));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(buffer.payload, binary_buff, buffer.payload_size));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(byte_buffer_construct_malloc_fail)
+CTEST_FUNCTION(byte_buffer_construct_malloc_fail)
 {
     // arrange
     BYTE_BUFFER buffer = { 0 };
@@ -387,13 +376,13 @@ TEST_FUNCTION(byte_buffer_construct_malloc_fail)
     int result = byte_buffer_construct(&buffer, binary_buff, bin_length);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
 }
 
-TEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
+CTEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
 {
     // arrange
     size_t bin_length = 64;
@@ -414,15 +403,15 @@ TEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
     int result = byte_buffer_construct(&buffer, initial_buff+init_length, bin_length);
 
     // assert
-    ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(int, 0, memcmp(buffer.payload, initial_buff, buffer.payload_size));
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(buffer.payload, initial_buff, buffer.payload_size));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-TEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
+CTEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
 {
     // arrange
     size_t bin_length = 64;
@@ -443,11 +432,11 @@ TEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
     int result = byte_buffer_construct(&buffer, initial_buff+init_length, bin_length);
 
     // assert
-    ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
     my_mem_shim_free(buffer.payload);
 }
 
-END_TEST_SUITE(buffer_alloc_ut)
+CTEST_END_TEST_SUITE(buffer_alloc_ut)
