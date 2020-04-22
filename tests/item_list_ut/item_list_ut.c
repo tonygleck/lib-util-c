@@ -88,7 +88,7 @@ CTEST_FUNCTION(item_list_create_succeed)
     // arrange
     ITEM_LIST_HANDLE result;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     result = item_list_create(item_destroy_callback, NULL);
@@ -107,7 +107,7 @@ CTEST_FUNCTION(item_list_create_fail)
     // arrange
     ITEM_LIST_HANDLE result;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     result = item_list_create(item_destroy_callback, NULL);
@@ -154,7 +154,7 @@ CTEST_FUNCTION(item_list_destroy_no_items_succeed)
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     // act
     item_list_destroy(handle);
@@ -185,7 +185,7 @@ CTEST_FUNCTION(item_list_add_item_1_item_succeed)
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     int result = item_list_add_item(handle, TEST_ITEM_1);
@@ -210,7 +210,7 @@ CTEST_FUNCTION(item_list_add_item_multiple_item_succeed)
     // act
     for (size_t index = 0; index < item_count; index++)
     {
-        STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+        STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
         int result = item_list_add_item(handle, TEST_ARRAY[index]);
         CTEST_ASSERT_ARE_EQUAL(int, 0, result);
@@ -245,8 +245,8 @@ CTEST_FUNCTION(item_list_add_copy_fail)
     int negativeTestsInitResult = umock_c_negative_tests_init();
     CTEST_ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     umock_c_negative_tests_snapshot();
 
@@ -273,8 +273,8 @@ CTEST_FUNCTION(item_list_add_copy_succeed)
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     int result = item_list_add_copy(handle, TEST_ITEM_1, TEST_ITEM_SIZE);
 
@@ -306,8 +306,8 @@ CTEST_FUNCTION(item_list_remove_item_succeed)
     item_list_add_item(handle, TEST_ITEM_1);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_ARG, IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     int result = item_list_remove_item(handle, 0);
 
@@ -329,8 +329,8 @@ CTEST_FUNCTION(item_list_remove_item_2_items_succeed)
     item_list_add_copy(handle, TEST_ITEM_3, TEST_ITEM_SIZE);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     int result = item_list_remove_item(handle, 2);
 
@@ -458,8 +458,8 @@ CTEST_FUNCTION(item_list_clear_handle_success)
 
     for (size_t index = 0; index < item_count; index++)
     {
-        STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
-        STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+        STRICT_EXPECTED_CALL(item_destroy_callback(IGNORED_ARG, IGNORED_ARG));
+        STRICT_EXPECTED_CALL(free(IGNORED_ARG));
     }
     int result = item_list_clear(handle);
 

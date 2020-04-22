@@ -109,7 +109,7 @@ CTEST_FUNCTION(clone_string_succeed)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     int result = clone_string(&target, TEST_SOURCE_STRING);
@@ -128,7 +128,7 @@ CTEST_FUNCTION(clone_string_fail)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = clone_string(&target, TEST_SOURCE_STRING);
@@ -189,7 +189,7 @@ CTEST_FUNCTION(clone_string_with_size_success)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     int result = clone_string_with_size(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN);
@@ -207,7 +207,7 @@ CTEST_FUNCTION(clone_string_with_size_fail)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = clone_string_with_size(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN);
@@ -268,7 +268,7 @@ CTEST_FUNCTION(clone_string_with_format_success)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     int result = clone_string_with_format(&target, TEST_SOURCE_STRING_FMT, 42);
@@ -287,7 +287,7 @@ CTEST_FUNCTION(clone_string_with_format_fail)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = clone_string_with_format(&target, TEST_SOURCE_STRING_FMT, 42);
@@ -335,7 +335,7 @@ CTEST_FUNCTION(clone_string_with_size_format_success)
     // arrange
     char* target;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     int result = clone_string_with_size_format(&target, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);

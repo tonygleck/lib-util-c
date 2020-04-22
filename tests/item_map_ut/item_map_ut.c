@@ -98,9 +98,9 @@ CTEST_FUNCTION_CLEANUP()
 
 static void setup_item_map_add_item_mocks(void)
 {
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(clone_string(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(clone_string(IGNORED_ARG, IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 }
 
 CTEST_FUNCTION(item_map_create_succeed)
@@ -108,8 +108,8 @@ CTEST_FUNCTION(item_map_create_succeed)
     // arrange
     ITEM_MAP_HANDLE result;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     result = item_map_create(10, map_destroy_callback, NULL, NULL);
@@ -127,8 +127,8 @@ CTEST_FUNCTION(item_map_create_destroy_cb_NULL_succeed)
     // arrange
     ITEM_MAP_HANDLE result;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     result = item_map_create(20, NULL, NULL, NULL);
@@ -150,8 +150,8 @@ CTEST_FUNCTION(item_map_create_fail)
     CTEST_ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     umock_c_negative_tests_snapshot();
 
@@ -287,9 +287,9 @@ CTEST_FUNCTION(item_map_add_item_collision_succeed)
     int result = item_map_add_item(handle, "aaaaaa", &value, sizeof(int));
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(clone_string(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(clone_string(IGNORED_ARG, IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
 
     // act
     result = item_map_add_item(handle, "aaaba", &value, sizeof(int));
@@ -310,11 +310,11 @@ CTEST_FUNCTION(item_map_add_item_collision_fail)
     int result = item_map_add_item(handle, "aaaaaa", &value, sizeof(int));
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG));
-    STRICT_EXPECTED_CALL(clone_string(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(clone_string(IGNORED_ARG, IGNORED_ARG));
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     // act
     result = item_map_add_item(handle, "aaaba", &value, sizeof(int));
@@ -525,9 +525,9 @@ CTEST_FUNCTION(item_map_remove_item_collision_succeed)
     (void)item_map_add_item(handle, "aaaba", &value_2, sizeof(int));
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     // act
     int result = item_map_remove_item(handle, "aaaba");
@@ -551,9 +551,9 @@ CTEST_FUNCTION(item_map_remove_item_succeed)
     (void)item_map_add_item(handle, "sunny_day", &value_2, sizeof(int));
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     // act
     int result = item_map_remove_item(handle, "rainy_day");
@@ -591,12 +591,12 @@ CTEST_FUNCTION(item_map_clear_all_succeed)
     (void)item_map_add_item(handle, "aaaba", &value_2, sizeof(int));
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
-    STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
 
     // act
     int result = item_map_clear_all(handle);

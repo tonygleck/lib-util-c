@@ -160,7 +160,7 @@ CTEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
     umock_c_reset_all_calls();
 
     //size_t realloc_len = strlen(second_string);
-    STRICT_EXPECTED_CALL(realloc(IGNORED_PTR_ARG, IGNORED_NUM_ARG));
+    STRICT_EXPECTED_CALL(realloc(IGNORED_ARG, IGNORED_ARG));
 
     // act
     int result = string_buffer_construct(&buffer, second_string);
@@ -180,7 +180,7 @@ CTEST_FUNCTION(string_buffer_construct_malloc_fail)
     STRING_BUFFER buffer = { 0 };
     const char* src_string = "test_string";
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = string_buffer_construct(&buffer, src_string);
@@ -257,7 +257,7 @@ CTEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
     const char* total_string = "test_string_123";
     int value = 123;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = string_buffer_construct_sprintf(&buffer, fmt_string, value);
@@ -370,7 +370,7 @@ CTEST_FUNCTION(byte_buffer_construct_malloc_fail)
     const unsigned char binary_buff[] = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
     size_t bin_length = 5;
 
-    STRICT_EXPECTED_CALL(malloc(IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = byte_buffer_construct(&buffer, binary_buff, bin_length);
@@ -397,7 +397,7 @@ CTEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
     (void)byte_buffer_construct(&buffer, initial_buff, init_length);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(realloc(IGNORED_PTR_ARG, bin_length+bin_length+init_length+DEFAULT_ALLOC_SIZE+1));
+    STRICT_EXPECTED_CALL(realloc(IGNORED_ARG, bin_length+bin_length+init_length+DEFAULT_ALLOC_SIZE+1));
 
     // act
     int result = byte_buffer_construct(&buffer, initial_buff+init_length, bin_length);
@@ -426,7 +426,7 @@ CTEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
     (void)byte_buffer_construct(&buffer, initial_buff, init_length);
     umock_c_reset_all_calls();
 
-    STRICT_EXPECTED_CALL(realloc(IGNORED_PTR_ARG, IGNORED_NUM_ARG)).SetReturn(NULL);
+    STRICT_EXPECTED_CALL(realloc(IGNORED_ARG, IGNORED_ARG)).SetReturn(NULL);
 
     // act
     int result = byte_buffer_construct(&buffer, initial_buff+init_length, bin_length);
