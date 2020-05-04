@@ -70,7 +70,10 @@ static void clear_all_items(ITEM_LIST_INFO* list_info)
         }
         else
         {
-            list_info->destroy_cb(list_info->user_ctx, list_info->head_node->node_item);
+            if (list_info->destroy_cb != NULL)
+            {
+                list_info->destroy_cb(list_info->user_ctx, list_info->head_node->node_item);
+            }
         }
         free(list_info->head_node);
         list_info->head_node = temp;
@@ -81,12 +84,7 @@ static void clear_all_items(ITEM_LIST_INFO* list_info)
 ITEM_LIST_HANDLE item_list_create(ITEM_LIST_DESTROY_ITEM destroy_cb, void* user_ctx)
 {
     ITEM_LIST_INFO* result;
-    if (destroy_cb == NULL)
-    {
-        log_error("Invalid parameter destroy callback");
-        result = NULL;
-    }
-    else if ((result = (ITEM_LIST_INFO*)malloc(sizeof(ITEM_LIST_INFO))) == NULL)
+    if ((result = (ITEM_LIST_INFO*)malloc(sizeof(ITEM_LIST_INFO))) == NULL)
     {
         log_error("Failure allocating item list buffer");
     }
@@ -188,7 +186,10 @@ int item_list_remove_item(ITEM_LIST_HANDLE handle, size_t remove_index)
         }
         else
         {
-            handle->destroy_cb(handle->user_ctx, rm_pos->node_item);
+            if (handle->destroy_cb != NULL)
+            {
+                handle->destroy_cb(handle->user_ctx, rm_pos->node_item);
+            }
         }
         if (prev_item == NULL)
         {

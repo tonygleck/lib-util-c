@@ -119,22 +119,6 @@ CTEST_FUNCTION(item_list_create_fail)
     // cleanup
 }
 
-CTEST_FUNCTION(item_list_create_destroy_cb_NULL_fail)
-{
-    // arrange
-    ITEM_LIST_HANDLE result;
-
-    // act
-    result = item_list_create(NULL, NULL);
-
-    // assert
-    CTEST_ASSERT_IS_NULL(result);
-    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
-
-    // cleanup
-    item_list_destroy(result);
-}
-
 CTEST_FUNCTION(item_list_destroy_handle_NULL_succeed)
 {
     // arrange
