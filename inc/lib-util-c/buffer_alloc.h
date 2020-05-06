@@ -27,10 +27,12 @@ typedef struct BYTE_BUFFER_TAG
 } BYTE_BUFFER;
 
 MOCKABLE_FUNCTION(, int, string_buffer_construct, STRING_BUFFER*, buffer, const char*, value);
+MOCKABLE_FUNCTION(, void, string_buffer_free, STRING_BUFFER*, buffer);
 
 int string_buffer_construct_sprintf(STRING_BUFFER* buffer, const char* format, ...);
 
 MOCKABLE_FUNCTION(, int, byte_buffer_construct, BYTE_BUFFER*, buffer, const unsigned char*, payload, size_t, length);
+MOCKABLE_FUNCTION(, void, byte_buffer_free, BYTE_BUFFER*, buffer);
 
 #ifdef __cplusplus
 }

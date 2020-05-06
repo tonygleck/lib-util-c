@@ -122,7 +122,7 @@ CTEST_FUNCTION(string_buffer_construct_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    string_buffer_free(&buffer);
 }
 
 CTEST_FUNCTION(string_buffer_construct_append_string_succeed)
@@ -145,7 +145,7 @@ CTEST_FUNCTION(string_buffer_construct_append_string_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    string_buffer_free(&buffer);
 }
 
 CTEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
@@ -171,7 +171,7 @@ CTEST_FUNCTION(string_buffer_construct_alloc_append_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    string_buffer_free(&buffer);
 }
 
 CTEST_FUNCTION(string_buffer_construct_malloc_fail)
@@ -246,7 +246,7 @@ CTEST_FUNCTION(string_buffer_construct_sprintf_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    string_buffer_free(&buffer);
 }
 
 CTEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
@@ -290,7 +290,20 @@ CTEST_FUNCTION(string_buffer_construct_sprintf_append_string_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    string_buffer_free(&buffer);
+}
+
+CTEST_FUNCTION(string_buffer_free_buffer_NULL_fail)
+{
+    // arrange
+
+    // act
+    string_buffer_free(NULL);
+
+    // assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
 }
 
 CTEST_FUNCTION(byte_buffer_construct_buffer_NULL_fail)
@@ -360,7 +373,7 @@ CTEST_FUNCTION(byte_buffer_construct_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    byte_buffer_free(&buffer);
 }
 
 CTEST_FUNCTION(byte_buffer_construct_malloc_fail)
@@ -408,7 +421,7 @@ CTEST_FUNCTION(byte_buffer_construct_append_binary_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    byte_buffer_free(&buffer);
 }
 
 CTEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
@@ -436,7 +449,40 @@ CTEST_FUNCTION(byte_buffer_construct_append_binary_realloc_fail)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     // cleanup
-    my_mem_shim_free(buffer.payload);
+    byte_buffer_free(&buffer);
+}
+
+CTEST_FUNCTION(byte_buffer_free_succeed)
+{
+    // arrange
+    BYTE_BUFFER buffer = { 0 };
+    const unsigned char binary_buff[] = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
+    size_t bin_length = 5;
+    (void)byte_buffer_construct(&buffer, binary_buff, bin_length);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+
+    // act
+    byte_buffer_free(&buffer);
+
+    // assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+CTEST_FUNCTION(byte_buffer_free_buffer_NULL_fail)
+{
+    // arrange
+
+    // act
+    byte_buffer_free(NULL);
+
+    // assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
 }
 
 CTEST_END_TEST_SUITE(buffer_alloc_ut)
