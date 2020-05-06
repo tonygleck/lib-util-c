@@ -17,6 +17,15 @@ typedef struct GENERIC_BUFFER_TAG
     size_t default_alloc;
 } GENERIC_BUFFER;
 
+static void free_buffer(GENERIC_BUFFER* buffer)
+{
+    if (buffer->alloc_size > 0)
+    {
+        free(buffer->payload);
+        buffer->default_alloc = buffer->alloc_size = 0;
+    }
+}
+
 static int allocate_buffer(GENERIC_BUFFER* buffer, size_t new_length, bool* reallocated)
 {
     int result;
@@ -116,6 +125,14 @@ int string_buffer_construct(STRING_BUFFER* buffer, const char* value)
     return result;
 }
 
+void string_buffer_free(STRING_BUFFER* buffer)
+{
+    if (buffer != NULL)
+    {
+        free_buffer((GENERIC_BUFFER*)buffer);
+    }
+}
+
 int string_buffer_construct_sprintf(STRING_BUFFER* buffer, const char* format, ...)
 {
     int result;
@@ -200,4 +217,14 @@ int byte_buffer_construct(BYTE_BUFFER* buffer, const unsigned char* payload, siz
         }
     }
     return result;
+}
+
+void byte_buffer_free(BYTE_BUFFER* buffer)
+{
+    if (buffer != NULL)
+    {
+        // Payload size does not get zero'd
+        buffer->payload_size = 0;
+        free_buffer((GENERIC_BUFFER*)buffer);
+    }
 }
