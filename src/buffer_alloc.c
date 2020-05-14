@@ -26,7 +26,7 @@ static void free_buffer(GENERIC_BUFFER* buffer)
     }
 }
 
-static int allocate_buffer(GENERIC_BUFFER* buffer, size_t new_length, bool* reallocated)
+static int allocate_buffer(GENERIC_BUFFER* buffer, size_t buffer_len, size_t new_length, bool* reallocated)
 {
     int result;
     if (buffer->alloc_size == 0)
@@ -63,7 +63,7 @@ static int allocate_buffer(GENERIC_BUFFER* buffer, size_t new_length, bool* real
     else
     {
         // Do we need to realloc
-        size_t curr_len = strlen(buffer->payload);
+        size_t curr_len = buffer_len;
         if (curr_len + new_length + 1 >= buffer->alloc_size)
         {
             char* temp_payload;
@@ -106,7 +106,12 @@ int string_buffer_construct(STRING_BUFFER* buffer, const char* value)
     {
         bool reallocated;
         size_t new_length = strlen(value);
-        if (allocate_buffer((GENERIC_BUFFER*)buffer, new_length, &reallocated) != 0)
+        size_t buffer_len = 0;
+        if (buffer->payload != NULL)
+        {
+            buffer_len = strlen(buffer->payload);
+        }
+        if (allocate_buffer((GENERIC_BUFFER*)buffer, buffer_len, new_length, &reallocated) != 0)
         {
             log_error("Failure allocating string buffer value");
             result = __LINE__;
@@ -130,6 +135,7 @@ void string_buffer_free(STRING_BUFFER* buffer)
     if (buffer != NULL)
     {
         free_buffer((GENERIC_BUFFER*)buffer);
+        buffer->alloc_size = 0;
     }
 }
 
@@ -153,7 +159,12 @@ int string_buffer_construct_sprintf(STRING_BUFFER* buffer, const char* format, .
         if (length > 0)
         {
             bool reallocated;
-            if (allocate_buffer((GENERIC_BUFFER*)buffer, length, &reallocated) != 0)
+            size_t buffer_len = 0;
+            if (buffer->payload != NULL)
+            {
+                buffer_len = strlen(buffer->payload);
+            }
+            if (allocate_buffer((GENERIC_BUFFER*)buffer, buffer_len, length, &reallocated) != 0)
             {
                 log_error("Failure allocating string buffer");
                 result = __LINE__;
@@ -204,7 +215,7 @@ int byte_buffer_construct(BYTE_BUFFER* buffer, const unsigned char* payload, siz
     }
     else
     {
-        if (allocate_buffer((GENERIC_BUFFER*)buffer, length, NULL) != 0)
+        if (allocate_buffer((GENERIC_BUFFER*)buffer, buffer->payload_size, length, NULL) != 0)
         {
             log_error("Failure allocating binary buffer");
             result = __LINE__;
@@ -224,7 +235,8 @@ void byte_buffer_free(BYTE_BUFFER* buffer)
     if (buffer != NULL)
     {
         // Payload size does not get zero'd
-        buffer->payload_size = 0;
         free_buffer((GENERIC_BUFFER*)buffer);
+        buffer->payload_size = 0;
+        buffer->alloc_size = 0;
     }
 }

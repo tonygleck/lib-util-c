@@ -14,6 +14,7 @@ static int i = 0;
 
 #include "lib-util-c/item_map.h"
 #include "lib-util-c/thread_mgr.h"
+#include "lib-util-c/buffer_alloc.h"
 
 #define START_HASH_VALUE    5381
 
@@ -37,61 +38,56 @@ void sighler (union sigval val)
     }
 }
 
+typedef struct CLIENT_E2E_DATA_TAG
+{
+    BYTE_BUFFER sent_data;
+} CLIENT_E2E_DATA;
+
 int main()
 {
     printf("Starting\r\n");
-    /*struct itimerval timer={0};
-    char a[200];
-    // Initial timeout value
-    timer.it_value.tv_sec = 1;
-
-    // We want a repetitive timer
-    timer.it_interval.tv_sec = 1;
-
-    // Register Signal handler
-    // And register for periodic timer with Kernel
-    signal(SIGALRM, &sigalrm_handler);
-    setitimer(ITIMER_REAL, &timer, NULL);
-
-    read(2, &a, 199);*/
-    /*pthread_attr_t attr;
-    pthread_attr_init( &attr );
-
-    struct sched_param parm;
-    parm.sched_priority = 255;
-    pthread_attr_setschedparam(&attr, &parm);*/
-
-    struct sigevent sig;
-    sig.sigev_notify = SIGEV_THREAD;
-    sig.sigev_notify_function = sighler;
-    sig.sigev_value.sival_int = 20;
-    sig.sigev_notify_attributes = NULL;//&attr;
-
-    //create a new timer.
-    int ret = timer_create(CLOCK_REALTIME, &sig, &timerid);
-    if (ret == 0)
+    unsigned char buffer[128];
+    for (size_t index = 0; index < 128; index++)
     {
-        struct itimerspec in, out;
-        in.it_value.tv_sec = 1;
-        in.it_value.tv_nsec = 0;
-        in.it_interval.tv_sec = 1;
-        in.it_interval.tv_nsec = 0;
-        //issue the periodic timer request here.
-        ret = timer_settime(timerid, 0, &in, &out);
-        if(ret == 0)
-            sleep(2);
-        else
-            printf("timer_settime() failed with %d\n", errno);
-    }
-    else
-    {
-        printf("timer_create() failed with %d\n", errno);
+        buffer[index] = 0x10 + index;
     }
 
-    thread_mgr_sleep(5);
+    CLIENT_E2E_DATA e2e_data = {0};
+    for (size_t index = 0; index < 10; index++)
+    {
+        byte_buffer_construct(&e2e_data.sent_data, buffer, 128);
+    printf("payload size %ld\n", e2e_data.sent_data.payload_size);
+    }
+    byte_buffer_free(&e2e_data.sent_data);
 
-    char a[200];
-    read(2, &a, 199);
+    // struct sigevent sig;
+    // sig.sigev_notify = SIGEV_THREAD;
+    // sig.sigev_notify_function = sighler;
+    // sig.sigev_value.sival_int = 20;
+    // sig.sigev_notify_attributes = NULL;//&attr;
+
+    // //create a new timer.
+    // int ret = timer_create(CLOCK_REALTIME, &sig, &timerid);
+    // if (ret == 0)
+    // {
+    //     struct itimerspec in, out;
+    //     in.it_value.tv_sec = 1;
+    //     in.it_value.tv_nsec = 0;
+    //     in.it_interval.tv_sec = 1;
+    //     in.it_interval.tv_nsec = 0;
+    //     //issue the periodic timer request here.
+    //     ret = timer_settime(timerid, 0, &in, &out);
+    //     if(ret == 0)
+    //         sleep(2);
+    //     else
+    //         printf("timer_settime() failed with %d\n", errno);
+    // }
+    // else
+    // {    unsigned char buffer[128];
+
+
+    // char a[200];
+    // read(2, &a, 199);
     printf("Press any key to exit\r\n");
     return 0;
 }
