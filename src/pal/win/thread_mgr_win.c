@@ -4,10 +4,9 @@
 #include <stdlib.h>
 #include <Windows.h>
 
-#include "lib-util-c/alarm_timer.h"
 #include "lib-util-c/app_logging.h"
 
-static void thread_mgr_sleep(unsigned int milliseconds)
+void thread_mgr_sleep(unsigned int milliseconds)
 {
     Sleep(milliseconds);
 }
