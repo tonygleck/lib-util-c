@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <errno.h>
 
 #include "lib-util-c/sys_debug_shim.h"
 #include "lib-util-c/app_logging.h"
@@ -24,7 +25,7 @@ FILE_MGR_HANDLE file_mgr_open(const char* filename, const char* param)
     }
     else if ((result->file = fopen(filename, param)) == NULL)
     {
-        log_error("Failure loading wav");
+        log_error("Failure loading wav %d: %s", errno, filename);
         free(result);
         result = NULL;
     }
