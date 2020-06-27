@@ -503,4 +503,87 @@ CTEST_FUNCTION(item_list_get_front_succeed)
     item_list_destroy(handle);
 }
 
+CTEST_FUNCTION(item_list_iterator_handle_NULL_fail)
+{
+    // arrange
+
+    ITERATOR_HANDLE iterator = item_list_iterator(NULL);
+    CTEST_ASSERT_IS_NULL(iterator);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+CTEST_FUNCTION(item_list_iterator_no_items_succeed)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    umock_c_reset_all_calls();
+
+    ITERATOR_HANDLE iterator = item_list_iterator(handle);
+    CTEST_ASSERT_IS_NULL(iterator);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
+CTEST_FUNCTION(item_list_iterator_succeed)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    item_list_add_item(handle, TEST_ITEM_1);
+    item_list_add_item(handle, TEST_ITEM_2);
+    umock_c_reset_all_calls();
+
+    ITERATOR_HANDLE iterator = item_list_iterator(handle);
+
+    // assert
+    CTEST_ASSERT_IS_NOT_NULL(iterator);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
+CTEST_FUNCTION(item_list_get_next_handle_NULL_succeed)
+{
+    // arrange
+    ITERATOR_HANDLE iterator;
+
+    const unsigned char* item = item_list_get_next(NULL, &iterator);
+
+    // assert
+    CTEST_ASSERT_IS_NULL(item);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+}
+
+CTEST_FUNCTION(item_list_get_next_succeed)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    item_list_add_item(handle, TEST_ITEM_1);
+    item_list_add_item(handle, TEST_ITEM_2);
+    ITERATOR_HANDLE iterator = item_list_iterator(handle);
+    umock_c_reset_all_calls();
+
+    const unsigned char* item = item_list_get_next(handle, &iterator);
+    CTEST_ASSERT_IS_NOT_NULL(item);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(item, TEST_ITEM_1, TEST_ITEM_SIZE));
+
+    item = item_list_get_next(handle, &iterator);
+    CTEST_ASSERT_IS_NOT_NULL(item);
+    CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(item, TEST_ITEM_2, TEST_ITEM_SIZE));
+
+    item = item_list_get_next(handle, &iterator);
+    CTEST_ASSERT_IS_NULL(item);
+
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
 CTEST_END_TEST_SUITE(item_list_ut)

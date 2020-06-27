@@ -23,7 +23,13 @@ typedef struct ITEM_LIST_INFO_TAG
     ITEM_NODE* tail_node;
     ITEM_LIST_DESTROY_ITEM destroy_cb;
     void* user_ctx;
+    ITEM_NODE* iterator;
 } ITEM_LIST_INFO;
+
+typedef struct ITEM_ITERATOR_TAG
+{
+    struct ITEM_NODE_TAG* item;
+} ITEM_ITERATOR;
 
 static int add_new_item(ITEM_LIST_INFO* list_info, void* item, bool local_alloc)
 {
@@ -79,6 +85,7 @@ static void clear_all_items(ITEM_LIST_INFO* list_info)
         list_info->head_node = temp;
     }
     list_info->item_count = 0;
+    list_info->iterator = NULL;
 }
 
 ITEM_LIST_HANDLE item_list_create(ITEM_LIST_DESTROY_ITEM destroy_cb, void* user_ctx)
@@ -180,6 +187,13 @@ int item_list_remove_item(ITEM_LIST_HANDLE handle, size_t remove_index)
             }
             rm_pos = rm_pos->next;
         }
+        // If the iterator points to this item
+        // then move it
+        if (handle->iterator == rm_pos)
+        {
+            handle->iterator = rm_pos->next;
+        }
+
         if (handle->head_node->locally_allocated)
         {
             free(rm_pos->node_item);
@@ -230,13 +244,11 @@ const void* item_list_get_item(ITEM_LIST_HANDLE handle, size_t item_index)
     }
     else if (item_index >= handle->item_count)
     {
-        log_error("Invalid index size");
+        log_error("Invalid index size item_count: %zu item_index: %zu", handle->item_count, item_index);
     }
     else
     {
         ITEM_NODE* pos = handle->head_node;
-        //ITEM_NODE* prev_item = NULL;
-
         for (size_t index = 0; index < handle->item_count; index++)
         {
             if (index == item_index)
@@ -265,6 +277,48 @@ const void* item_list_get_front(ITEM_LIST_HANDLE handle)
     else
     {
         result = handle->head_node->node_item;
+    }
+    return result;
+}
+
+ITERATOR_HANDLE item_list_iterator(ITEM_LIST_HANDLE handle)
+{
+    ITERATOR_HANDLE result;
+    if (handle == NULL)
+    {
+        log_error("Invalid parameter handle NULL");
+        result = NULL;
+    }
+    else if (handle->item_count == 0)
+    {
+        result = NULL;
+    }
+    else
+    {
+        result = handle->iterator = handle->head_node;
+    }
+    return result;
+}
+
+const void* item_list_get_next(ITEM_LIST_HANDLE handle, ITERATOR_HANDLE* iterator)
+{
+    const void* result;
+    if (handle == NULL || iterator == NULL)
+    {
+        log_error("Invalid parameter handle: %p, iterator: %p", handle, iterator);
+        result = NULL;
+    }
+    else
+    {
+        if ((*iterator) == NULL)
+        {
+            result = NULL;
+        }
+        else
+        {
+            result = (*iterator)->node_item;
+            *iterator = (*iterator)->next;
+        }
     }
     return result;
 }
