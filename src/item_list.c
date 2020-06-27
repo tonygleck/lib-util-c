@@ -85,7 +85,7 @@ static void clear_all_items(ITEM_LIST_INFO* list_info)
         list_info->head_node = temp;
     }
     list_info->item_count = 0;
-    list_info->iterator = NULL:
+    list_info->iterator = NULL;
 }
 
 ITEM_LIST_HANDLE item_list_create(ITEM_LIST_DESTROY_ITEM destroy_cb, void* user_ctx)

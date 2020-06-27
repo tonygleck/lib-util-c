@@ -27,7 +27,9 @@ MOCKABLE_FUNCTION(, const void*, item_list_get_item, ITEM_LIST_HANDLE, handle, s
 MOCKABLE_FUNCTION(, const void*, item_list_get_front, ITEM_LIST_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, item_list_clear, ITEM_LIST_HANDLE, handle);
 
+// Resets the iterator to the inital item
 MOCKABLE_FUNCTION(, ITERATOR_HANDLE, item_list_iterator, ITEM_LIST_HANDLE, handle);
+// Moves the iterator the the next item
 MOCKABLE_FUNCTION(, const void*, item_list_get_next, ITEM_LIST_HANDLE, handle, ITERATOR_HANDLE*, iterator);
 
 
