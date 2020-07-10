@@ -47,6 +47,7 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/item_list.c
     ${PROJECT_SOURCE_DIR}/src/item_map.c
     ${PROJECT_SOURCE_DIR}/src/sys_debug_shim.c
+    ${PROJECT_SOURCE_DIR}/src/thread_mgr.c
 )
 set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/alarm_timer.h
@@ -65,12 +66,12 @@ set(lib_header_files
 
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
-        ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
+        #${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
         #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
-        ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
+        #${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
     )
 elseif(STM32)
     set(lib_pal_src_files ${lib_pal_src_files}

@@ -8,6 +8,8 @@
 #include "lib-util-c/app_logging.h"
 #include "lib-util-c/thread_mgr.h"
 
+#include "thread_wrapper.h"
+
 typedef struct THREAD_MGR_INFO_TAG
 {
     int j;
