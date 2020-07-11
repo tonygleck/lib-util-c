@@ -24,6 +24,12 @@
 
 #define ENABLE_MOCKS
 #include "lib-util-c/sys_debug_shim.h"
+
+typedef void*(*start_routine)(void*);
+
+MOCKABLE_FUNCTION(, int, pthread_create, pthread_t*, thread, pthread_attr_t*, attr, start_routine, start_func, void*, arg);
+MOCKABLE_FUNCTION(, int, pthread_join, pthread_t,  thread, void**, value_ptr);
+MOCKABLE_FUNCTION(, int, pthread_detach, pthread_t, thread);
 #undef ENABLE_MOCKS
 
 #include "lib-util-c/thread_mgr.h"

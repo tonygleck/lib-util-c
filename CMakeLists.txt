@@ -72,16 +72,18 @@ elseif(UNIX)
         #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
     )
+    set(lib_library_files pthread)
+
 elseif(STM32)
     set(lib_pal_src_files ${lib_pal_src_files}
     )
 endif()
 
-
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
 add_library(lib-util-c ${lib_src_files} ${lib_header_files} ${lib_pal_src_files})
 target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
+target_link_libraries(lib-util-c ${lib_library_files})
 
 addCompileSettings(lib-util-c)
 compileTargetAsC99(lib-util-c)

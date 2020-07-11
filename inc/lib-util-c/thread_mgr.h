@@ -12,7 +12,12 @@ extern "C" {
 
 typedef struct THREAD_MGR_INFO_TAG* THREAD_MGR_HANDLE;
 
-MOCKABLE_FUNCTION(, THREAD_MGR_HANDLE, thread_mgr_init);
+typedef int(*THREAD_START_FUNC)(void*);
+
+MOCKABLE_FUNCTION(, THREAD_MGR_HANDLE, thread_mgr_init, THREAD_START_FUNC, start_func, void*, parameter);
+MOCKABLE_FUNCTION(, int, thread_mgr_join, THREAD_MGR_HANDLE, handle);
+MOCKABLE_FUNCTION(, int, thread_mgr_detach, THREAD_MGR_HANDLE, handle);
+
 MOCKABLE_FUNCTION(, void, thread_mgr_sleep, size_t, ms);
 
 #ifdef __cplusplus
