@@ -11,9 +11,13 @@ extern "C" {
 #include "umock_c/umock_c_prod.h"
 
 #ifdef WIN32
+    #include <windows.h>
+
     typedef HANDLE MUTEX_HANDLE;
 #else
-    typedef pthread_mutex_t MUTEX_HANDLE;
+    #include <pthread.h>
+
+    typedef pthread_mutex_t* MUTEX_HANDLE;
 #endif
 
 MOCKABLE_FUNCTION(, int, mutex_mgr_create, MUTEX_HANDLE*, handle);

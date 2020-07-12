@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <pthread.h>
+#include <errno.h>
 
 #include "lib-util-c/app_logging.h"
 #include "lib-util-c/thread_mgr.h"
@@ -21,7 +22,7 @@ static void* thread_worker_func(void* parameter)
     THREAD_MGR_INFO* thread_mgr = (THREAD_MGR_INFO*)parameter;
     if (thread_mgr != NULL)
     {
-        thread_mgr->thread_func(thread_mgr->thread_parameter);
+        (void)thread_mgr->thread_func(thread_mgr->thread_parameter);
     }
     return NULL;
 }
@@ -37,9 +38,14 @@ THREAD_MGR_HANDLE thread_mgr_init(THREAD_START_FUNC start_func, void* parameter)
     {
         result->thread_func = start_func;
         result->thread_parameter = parameter;
-        pthread_create(&result->main_thread, NULL, thread_worker_func, result);
+        int thread_res = pthread_create(&result->main_thread, NULL, thread_worker_func, result);
+        if (thread_res != 0)
+        {
+            log_error("Failure creating thread %d", thread_res);
+            free(result);
+            result = NULL;
+        }
     }
-
     return NULL;
 }
 
@@ -56,6 +62,7 @@ int thread_mgr_join(THREAD_MGR_HANDLE handle)
         void* res;
         pthread_join(handle->main_thread, &res);
         free(handle);
+        result = 0;
     }
     return result;
 }
