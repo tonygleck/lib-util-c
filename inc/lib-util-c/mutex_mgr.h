@@ -17,12 +17,13 @@ extern "C" {
 #else
     #include <pthread.h>
 
-    typedef pthread_mutex_t* MUTEX_HANDLE;
+    typedef pthread_mutex_t MUTEX_HANDLE;
 #endif
 
-MOCKABLE_FUNCTION(, int, mutex_mgr_create, MUTEX_HANDLE*, handle);
-MOCKABLE_FUNCTION(, int, mutex_mgr_destroy, MUTEX_HANDLE, handle);
+MOCKABLE_FUNCTION(, int, mutex_mgr_create, MUTEX_HANDLE, handle);
+MOCKABLE_FUNCTION(, void, mutex_mgr_destroy, MUTEX_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, mutex_mgr_lock, MUTEX_HANDLE, handle);
+MOCKABLE_FUNCTION(, int, mutex_mgr_trylock, MUTEX_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, mutex_mgr_unlock, MUTEX_HANDLE, handle);
 
 #ifdef __cplusplus
