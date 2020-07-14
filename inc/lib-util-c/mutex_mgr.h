@@ -20,7 +20,7 @@ extern "C" {
     typedef pthread_mutex_t MUTEX_HANDLE;
 #endif
 
-MOCKABLE_FUNCTION(, int, mutex_mgr_create, MUTEX_HANDLE, handle);
+MOCKABLE_FUNCTION(, int, mutex_mgr_create, MUTEX_HANDLE*, handle);
 MOCKABLE_FUNCTION(, void, mutex_mgr_destroy, MUTEX_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, mutex_mgr_lock, MUTEX_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, mutex_mgr_trylock, MUTEX_HANDLE, handle);
