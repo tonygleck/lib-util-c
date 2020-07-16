@@ -48,31 +48,28 @@ typedef void*(*start_routine)(void*);
 MOCKABLE_FUNCTION(, int, pthread_create, pthread_t*, thread, const pthread_attr_t*, attr, start_routine, start_func, void*, arg);
 MOCKABLE_FUNCTION(, int, pthread_join, pthread_t, thread, void**, value_ptr);
 MOCKABLE_FUNCTION(, int, pthread_detach, pthread_t, thread);
+
+MOCKABLE_FUNCTION(, int, test_thread_start_func, void*, parameter);
 #undef ENABLE_MOCKS
 
 #include "lib-util-c/thread_mgr.h"
 
+static void* g_test_thread_start_param = (void*)0x543210;
 static start_routine g_test_start_func = NULL;
-static void* start_parameter = NULL;
-
-static int test_thread_start_func(void* parameter)
-{
-    return 0;
-}
+static void* g_start_parameter = NULL;
 
 static int my_pthread_create(pthread_t* thread, const pthread_attr_t* attr, start_routine start_func, void* arg)
 {
     (void)attr;
     g_test_start_func = start_func;
-    start_parameter = arg;
-    thread = (pthread_t*)my_mem_shim_malloc(1);
+    g_start_parameter = arg;
     return 0;
 }
 
 static int my_pthread_join(pthread_t thread, void** value_ptr)
 {
     (void)value_ptr;
-    my_mem_shim_free(&thread);
+    (void)thread;
     return 0;
 }
 
@@ -93,6 +90,12 @@ CTEST_SUITE_INITIALIZE()
     result = umocktypes_charptr_register_types();
     CTEST_ASSERT_ARE_EQUAL(int, 0, result);
 
+    REGISTER_UMOCK_ALIAS_TYPE(start_routine, void*);
+    REGISTER_UMOCK_ALIAS_TYPE(THREAD_START_FUNC, void*);
+    REGISTER_UMOCK_ALIAS_TYPE(pthread_t, unsigned long);
+
+    //REGISTER_TYPE(pthread_t, pthread_t);
+
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_malloc, my_mem_shim_malloc);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(mem_shim_malloc, NULL);
     REGISTER_GLOBAL_MOCK_HOOK(mem_shim_realloc, my_mem_shim_realloc);
@@ -104,7 +107,7 @@ CTEST_SUITE_INITIALIZE()
     REGISTER_GLOBAL_MOCK_HOOK(pthread_join, my_pthread_join);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(pthread_join, __LINE__);
 
-    //REGISTER_UMOCK_ALIAS_TYPE(ALARM_TIMER_HANDLE, void*);
+    REGISTER_GLOBAL_MOCK_RETURN(test_thread_start_func, 0);
 }
 
 CTEST_SUITE_CLEANUP()
@@ -115,10 +118,26 @@ CTEST_SUITE_CLEANUP()
 CTEST_FUNCTION_INITIALIZE()
 {
     umock_c_reset_all_calls();
+    g_test_start_func = NULL;
+    g_start_parameter = NULL;
 }
 
 CTEST_FUNCTION_CLEANUP()
 {
+}
+
+CTEST_FUNCTION(thread_mgr_init_start_func_NULL_fail)
+{
+    //arrange
+
+    //act
+    THREAD_MGR_HANDLE result = thread_mgr_init(NULL, NULL);
+
+    //assert
+    CTEST_ASSERT_IS_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
 }
 
 CTEST_FUNCTION(thread_mgr_init_succeed)
@@ -132,9 +151,143 @@ CTEST_FUNCTION(thread_mgr_init_succeed)
 
     //assert
     CTEST_ASSERT_IS_NOT_NULL(result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     //cleanup
     thread_mgr_join(result);
+}
+
+CTEST_FUNCTION(thread_mgr_init_fail)
+{
+    //arrange
+    int negativeTestsInitResult = umock_c_negative_tests_init();
+    CTEST_ASSERT_ARE_EQUAL(int, 0, negativeTestsInitResult);
+
+    STRICT_EXPECTED_CALL(malloc(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(pthread_create(IGNORED_ARG, IGNORED_ARG, IGNORED_ARG, IGNORED_ARG));
+
+    umock_c_negative_tests_snapshot();
+
+    size_t count = umock_c_negative_tests_call_count();
+    for (size_t index = 0; index < count; index++)
+    {
+        if (umock_c_negative_tests_can_call_fail(index))
+        {
+            umock_c_negative_tests_reset();
+            umock_c_negative_tests_fail_call(index);
+
+            // act
+            THREAD_MGR_HANDLE result = thread_mgr_init(test_thread_start_func, NULL);
+            // assert
+
+            //assert
+            CTEST_ASSERT_IS_NULL(result);
+        }
+    }
+
+    //cleanup
+        umock_c_negative_tests_deinit();
+}
+
+CTEST_FUNCTION(thread_mgr_join_succeed)
+{
+    THREAD_MGR_HANDLE handle = thread_mgr_init(test_thread_start_func, NULL);
+    umock_c_reset_all_calls();
+
+    //arrange
+    STRICT_EXPECTED_CALL(pthread_join(IGNORED_ARG, IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+
+    //act
+    int result = thread_mgr_join(handle);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+}
+
+CTEST_FUNCTION(thread_mgr_join_handle_NULL_succeed)
+{
+    //arrange
+
+    //act
+    int result = thread_mgr_join(NULL);
+
+    //assert
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+}
+
+CTEST_FUNCTION(thread_mgr_detach_succeed)
+{
+    THREAD_MGR_HANDLE handle = thread_mgr_init(test_thread_start_func, g_test_thread_start_param);
+    umock_c_reset_all_calls();
+
+    //arrange
+    STRICT_EXPECTED_CALL(pthread_detach(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+
+    //act
+    int result = thread_mgr_detach(handle);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+}
+
+CTEST_FUNCTION(thread_mgr_detach_fail)
+{
+    THREAD_MGR_HANDLE handle = thread_mgr_init(test_thread_start_func, g_test_thread_start_param);
+    umock_c_reset_all_calls();
+
+    //arrange
+    STRICT_EXPECTED_CALL(pthread_detach(IGNORED_ARG)).SetReturn(EINVAL);
+
+    //act
+    int result = thread_mgr_detach(handle);
+
+    //assert
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+}
+
+CTEST_FUNCTION(thread_mgr_detach_handle_NULL_succeed)
+{
+    //arrange
+
+    //act
+    int result = thread_mgr_detach(NULL);
+
+    //assert
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+}
+
+CTEST_FUNCTION(thread_worker_func_succeed)
+{
+    THREAD_MGR_HANDLE handle = thread_mgr_init(test_thread_start_func, g_test_thread_start_param);
+    umock_c_reset_all_calls();
+
+    //arrange
+    STRICT_EXPECTED_CALL(test_thread_start_func(g_test_thread_start_param)).SetReturn(EINVAL);
+
+    //act
+    g_test_start_func(g_start_parameter);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
 }
 
 CTEST_END_TEST_SUITE(thread_mgr_posix_ut)

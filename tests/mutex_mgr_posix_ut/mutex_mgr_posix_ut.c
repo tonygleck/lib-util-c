@@ -122,7 +122,7 @@ CTEST_FUNCTION(mutex_mgr_create_succeed)
     STRICT_EXPECTED_CALL(pthread_mutex_init(IGNORED_ARG, IGNORED_ARG));
 
     //act
-    int result = mutex_mgr_create(handle);
+    int result = mutex_mgr_create(&handle);
 
     //assert
     CTEST_ASSERT_ARE_EQUAL(int, 0, result);
@@ -140,7 +140,7 @@ CTEST_FUNCTION(mutex_mgr_create_fail)
     STRICT_EXPECTED_CALL(pthread_mutex_init(IGNORED_ARG, IGNORED_ARG)).SetReturn(-1);
 
     //act
-    int result = mutex_mgr_create(handle);
+    int result = mutex_mgr_create(&handle);
 
     //assert
     CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
@@ -153,7 +153,7 @@ CTEST_FUNCTION(mutex_mgr_create_fail)
 CTEST_FUNCTION(mutex_mgr_destroy_succeed)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange
@@ -171,7 +171,7 @@ CTEST_FUNCTION(mutex_mgr_destroy_succeed)
 CTEST_FUNCTION(mutex_mgr_lock_succeed)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange
@@ -191,7 +191,7 @@ CTEST_FUNCTION(mutex_mgr_lock_succeed)
 CTEST_FUNCTION(mutex_mgr_lock_fail)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange
@@ -211,7 +211,7 @@ CTEST_FUNCTION(mutex_mgr_lock_fail)
 CTEST_FUNCTION(mutex_mgr_trylock_succeed)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange
@@ -231,7 +231,7 @@ CTEST_FUNCTION(mutex_mgr_trylock_succeed)
 CTEST_FUNCTION(mutex_mgr_trylock_fail)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange
@@ -251,7 +251,7 @@ CTEST_FUNCTION(mutex_mgr_trylock_fail)
 CTEST_FUNCTION(mutex_mgr_unlock_succeed)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange
@@ -271,7 +271,7 @@ CTEST_FUNCTION(mutex_mgr_unlock_succeed)
 CTEST_FUNCTION(mutex_mgr_unlock_fail)
 {
     MUTEX_HANDLE handle;
-    mutex_mgr_create(handle);
+    mutex_mgr_create(&handle);
     umock_c_reset_all_calls();
 
     //arrange

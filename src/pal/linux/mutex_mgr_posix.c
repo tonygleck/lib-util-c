@@ -6,10 +6,15 @@
 #include "lib-util-c/app_logging.h"
 #include "lib-util-c/mutex_mgr.h"
 
-int mutex_mgr_create(MUTEX_HANDLE handle)
+int mutex_mgr_create(MUTEX_HANDLE* handle)
 {
     int result;
-    if (pthread_mutex_init(&handle, NULL) != 0)
+    if (handle == NULL)
+    {
+        log_error("Invalid Parameter specified");
+        result = __LINE__;
+    }
+    else if (pthread_mutex_init(handle, NULL) != 0)
     {
         log_error("Failure create mutex object");
         result = __LINE__;

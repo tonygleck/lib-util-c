@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <errno.h>
 
+#include "lib-util-c/sys_debug_shim.h"
 #include "lib-util-c/app_logging.h"
 #include "lib-util-c/thread_mgr.h"
 
@@ -30,7 +31,12 @@ static void* thread_worker_func(void* parameter)
 THREAD_MGR_HANDLE thread_mgr_init(THREAD_START_FUNC start_func, void* parameter)
 {
     THREAD_MGR_INFO* result;
-    if ((result = (THREAD_MGR_INFO*)malloc(sizeof(THREAD_MGR_INFO))) == NULL)
+    if (start_func == NULL)
+    {
+        log_error("Invalid parameter specified start_func: NULL;");
+        result = NULL;
+    }
+    else if ((result = (THREAD_MGR_INFO*)malloc(sizeof(THREAD_MGR_INFO))) == NULL)
     {
         log_error("Failure allocating thread manager");
     }
@@ -46,7 +52,7 @@ THREAD_MGR_HANDLE thread_mgr_init(THREAD_START_FUNC start_func, void* parameter)
             result = NULL;
         }
     }
-    return NULL;
+    return result;
 }
 
 int thread_mgr_join(THREAD_MGR_HANDLE handle)
@@ -60,7 +66,7 @@ int thread_mgr_join(THREAD_MGR_HANDLE handle)
     else
     {
         void* res;
-        pthread_join(handle->main_thread, &res);
+        (void)pthread_join(handle->main_thread, &res);
         free(handle);
         result = 0;
     }
@@ -77,8 +83,16 @@ int thread_mgr_detach(THREAD_MGR_HANDLE handle)
     }
     else
     {
-        pthread_detach(handle->main_thread);
-        result = 0;
+        if (pthread_detach(handle->main_thread) == 0)
+        {
+            free(handle);
+            result = 0;
+        }
+        else
+        {
+            log_error("Failure detaching from thread");
+            result = __LINE__;
+        }
     }
     return result;
 }
