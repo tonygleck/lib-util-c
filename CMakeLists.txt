@@ -59,6 +59,7 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/interval_timer.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_map.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/mutex_mgr.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sys_debug_shim.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/thread_mgr.h
 )
@@ -66,22 +67,26 @@ set(lib_header_files
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
         ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
+        ${PROJECT_SOURCE_DIR}/src/pal/win/mutex_mgr_win.c
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
         #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
+        ${PROJECT_SOURCE_DIR}/src/pal/linux/mutex_mgr_posix.c
     )
+    set(lib_library_files pthread)
+
 elseif(STM32)
     set(lib_pal_src_files ${lib_pal_src_files}
     )
 endif()
 
-
 include_directories(${PROJECT_SOURCE_DIR}/inc)
 
 add_library(lib-util-c ${lib_src_files} ${lib_header_files} ${lib_pal_src_files})
 target_include_directories(lib-util-c PUBLIC ${PROJECT_SOURCE_DIR}/inc/lib-util-c)
+target_link_libraries(lib-util-c ${lib_library_files})
 
 addCompileSettings(lib-util-c)
 compileTargetAsC99(lib-util-c)
