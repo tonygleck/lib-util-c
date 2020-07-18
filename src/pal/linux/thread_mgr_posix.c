@@ -2,10 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <time.h>
 #include <pthread.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "lib-util-c/sys_debug_shim.h"
 #include "lib-util-c/app_logging.h"
@@ -23,7 +23,7 @@ static void* thread_worker_func(void* parameter)
     THREAD_MGR_INFO* thread_mgr = (THREAD_MGR_INFO*)parameter;
     if (thread_mgr != NULL)
     {
-        (void)thread_mgr->thread_func(thread_mgr->thread_parameter);
+        thread_mgr->thread_func(thread_mgr->thread_parameter);
     }
     return NULL;
 }
@@ -103,4 +103,9 @@ void thread_mgr_sleep(size_t milliseconds)
     long nsRemainder = (milliseconds % 1000) * 1000000;
     struct timespec timeToSleep = { seconds, nsRemainder };
     (void)nanosleep(&timeToSleep, NULL);
+}
+
+size_t thread_mgr_get_num_proc(void)
+{
+    return (size_t)sysconf(_SC_NPROCESSORS_ONLN);
 }

@@ -83,3 +83,10 @@ void thread_mgr_sleep(size_t milliseconds)
 {
     Sleep((DWORD)milliseconds);
 }
+
+size_t thread_mgr_get_num_proc(void)
+{
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    return (size_t)sysinfo.dwNumberOfProcessors;
+}

@@ -47,6 +47,7 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/item_list.c
     ${PROJECT_SOURCE_DIR}/src/item_map.c
     ${PROJECT_SOURCE_DIR}/src/sys_debug_shim.c
+    ${PROJECT_SOURCE_DIR}/src/threadpool.c
 )
 set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/alarm_timer.h
@@ -62,6 +63,7 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/mutex_mgr.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sys_debug_shim.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/thread_mgr.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/threadpool.h
 )
 
 if (WIN32)

@@ -49,7 +49,7 @@ MOCKABLE_FUNCTION(, int, pthread_create, pthread_t*, thread, const pthread_attr_
 MOCKABLE_FUNCTION(, int, pthread_join, pthread_t, thread, void**, value_ptr);
 MOCKABLE_FUNCTION(, int, pthread_detach, pthread_t, thread);
 
-MOCKABLE_FUNCTION(, int, test_thread_start_func, void*, parameter);
+MOCKABLE_FUNCTION(, void, test_thread_start_func, void*, parameter);
 #undef ENABLE_MOCKS
 
 #include "lib-util-c/thread_mgr.h"
@@ -106,8 +106,6 @@ CTEST_SUITE_INITIALIZE()
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(pthread_create, EAGAIN);
     REGISTER_GLOBAL_MOCK_HOOK(pthread_join, my_pthread_join);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(pthread_join, __LINE__);
-
-    REGISTER_GLOBAL_MOCK_RETURN(test_thread_start_func, 0);
 }
 
 CTEST_SUITE_CLEANUP()
@@ -279,7 +277,7 @@ CTEST_FUNCTION(thread_worker_func_succeed)
     umock_c_reset_all_calls();
 
     //arrange
-    STRICT_EXPECTED_CALL(test_thread_start_func(g_test_thread_start_param)).SetReturn(EINVAL);
+    STRICT_EXPECTED_CALL(test_thread_start_func(g_test_thread_start_param));
 
     //act
     g_test_start_func(g_start_parameter);
