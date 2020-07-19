@@ -66,12 +66,14 @@ set(lib_header_files
 
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
+        ${PROJECT_SOURCE_DIR}/src/pal/win/condition_mgr_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/mutex_mgr_win.c
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
         #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
+        ${PROJECT_SOURCE_DIR}/src/pal/linux/condition_mgr_posix.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/mutex_mgr_posix.c
     )
