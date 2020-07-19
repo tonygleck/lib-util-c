@@ -7,13 +7,15 @@ extern "C" {
 #else
 #endif
 
+#include <time.h>
+
 #include "umock_c/umock_c_prod.h"
 #include "lib-util-c/mutex_mgr.h"
 
 #ifdef WIN32
     #include <windows.h>
 
-    typedef HANDLE SIGNAL_HANDLE;
+    typedef CONDITION_VARIABLE SIGNAL_HANDLE;
 #else
     #include <pthread.h>
 
