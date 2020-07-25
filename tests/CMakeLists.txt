@@ -9,6 +9,8 @@ add_unittest_directory(buffer_alloc_ut)
 add_unittest_directory(crt_extensions_ut)
 add_unittest_directory(item_list_ut)
 add_unittest_directory(item_map_ut)
+add_unittest_directory(threadpool_ut)
+
 if(WIN32)
     add_unittest_directory(mutex_mgr_win32_ut)
 else()
