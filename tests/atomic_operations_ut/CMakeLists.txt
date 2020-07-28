@@ -8,9 +8,15 @@ set(${theseTestsName}_test_files
     ${theseTestsName}.c
 )
 
-set(${theseTestsName}_c_files
-    ../../src/pal/linux/atomic_operations_linux.c
-)
+if (WIN32)
+    set(${theseTestsName}_c_files
+        ../../src/pal/win/atomic_operations_win.c
+    )
+else()
+    set(${theseTestsName}_c_files
+        ../../src/pal/linux/atomic_operations_linux.c
+    )
+endif()
 
 set(${theseTestsName}_h_files
 )

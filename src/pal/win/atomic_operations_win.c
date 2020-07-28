@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdatomic.h>
+#include <windows.h>
 
 #include "lib-util-c/atomic_operations.h"
 
@@ -16,23 +16,21 @@ long atomic_increment(long* value)
     }
     else
     {
-        atomic_fetch_add_explicit(value, 1, memory_order_relaxed);
-        result = *value;
+        result = InterlockedIncrement(value);
     }
     return result;
 }
 
-uint64_t atomic_increment64(uint64_t* value)
+int64_t atomic_increment64(int64_t* value)
 {
-    uint64_t result;
+    int64_t result;
     if (value == NULL)
     {
         result = 0;
     }
     else
     {
-        atomic_fetch_add_explicit(value, 1, memory_order_relaxed);
-        result = *value;
+        result = InterlockedIncrement64(value);
     }
     return result;
 }
@@ -46,50 +44,50 @@ long atomic_decrement(long* value)
     }
     else
     {
-        atomic_fetch_sub_explicit(value, 1, memory_order_relaxed);
-        result = *value;
+        result = InterlockedDecrement(value);
     }
     return result;
 }
 
-long atomic_decrement64(uint64_t* value)
+int64_t atomic_decrement64(int64_t* value)
 {
-    uint64_t result;
+    int64_t result;
     if (value == NULL)
     {
         result = 0;
     }
     else
     {
-        atomic_fetch_sub_explicit(value, 1, memory_order_relaxed);
-        result = *value;
+        result = InterlockedDecrement64(value);
     }
     return result;
 }
 
 long atomic_add(long* operand, long value)
 {
+    long result;
     if (operand == NULL)
     {
-        return 0;
+        result = 0;
     }
     else
     {
-        atomic_fetch_add_explicit(operand, value, memory_order_relaxed);
-        return *operand;
+        result = InterlockedAdd(operand, value);
     }
+    return result;
 }
 
 long atomic_subtract(long* operand, long value)
 {
+    long result;
     if (operand == NULL)
     {
-        return 0;
+        result = 0;
     }
     else
     {
-        atomic_fetch_sub_explicit(operand, value, memory_order_relaxed);
-        return *operand;
+        result = InterlockedAdd(operand, (value*-1));
     }
+    return result;
 }
 

@@ -12,9 +12,9 @@ extern "C" {
 #include "umock_c/umock_c_prod.h"
 
 MOCKABLE_FUNCTION(, long, atomic_increment, long*, value);
-MOCKABLE_FUNCTION(, uint64_t, atomic_increment64, uint64_t*, value);
+MOCKABLE_FUNCTION(, int64_t, atomic_increment64, int64_t*, value);
 MOCKABLE_FUNCTION(, long, atomic_decrement, long*, value);
-MOCKABLE_FUNCTION(, uint64_t, atomic_decrement64, uint64_t*, value);
+MOCKABLE_FUNCTION(, int64_t, atomic_decrement64, int64_t*, value);
 MOCKABLE_FUNCTION(, long, atomic_add, long*, operand, long, value);
 MOCKABLE_FUNCTION(, long, atomic_subtract, long*, operand, long, value);
 

@@ -67,7 +67,7 @@ set(lib_header_files
 
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
-        ${PROJECT_SOURCE_DIR}/src/pal/linux/atomic_operations_win.c
+        ${PROJECT_SOURCE_DIR}/src/pal/win/atomic_operations_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/condition_mgr_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/mutex_mgr_win.c
