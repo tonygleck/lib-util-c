@@ -3,6 +3,7 @@
 cmake_minimum_required(VERSION 3.2)
 
 add_unittest_directory(alarm_timer_ut)
+add_unittest_directory(atomic_operations_ut)
 add_unittest_directory(binary_tree_ut)
 add_unittest_directory(binary_encoder_ut)
 add_unittest_directory(buffer_alloc_ut)
