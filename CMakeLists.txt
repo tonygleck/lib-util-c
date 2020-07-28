@@ -51,6 +51,7 @@ set(lib_src_files
 set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/alarm_timer.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/app_logging.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/atomic_operations.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_encoder.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/buffer_alloc.h
@@ -66,6 +67,7 @@ set(lib_header_files
 
 if (WIN32)
     set(lib_pal_src_files ${lib_pal_src_files}
+        ${PROJECT_SOURCE_DIR}/src/pal/win/atomic_operations_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/condition_mgr_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/thread_mgr_win.c
         ${PROJECT_SOURCE_DIR}/src/pal/win/mutex_mgr_win.c
@@ -73,6 +75,7 @@ if (WIN32)
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
         #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
+        ${PROJECT_SOURCE_DIR}/src/pal/linux/atomic_operations_linux.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/condition_mgr_posix.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/mutex_mgr_posix.c
