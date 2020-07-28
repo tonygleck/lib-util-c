@@ -22,9 +22,9 @@ long atomic_increment(long* value)
     return result;
 }
 
-uint64_t atomic_increment64(uint64_t* value)
+int64_t atomic_increment64(int64_t* value)
 {
-    uint64_t result;
+    int64_t result;
     if (value == NULL)
     {
         result = 0;
@@ -52,9 +52,9 @@ long atomic_decrement(long* value)
     return result;
 }
 
-long atomic_decrement64(uint64_t* value)
+long atomic_decrement64(int64_t* value)
 {
-    uint64_t result;
+    int64_t result;
     if (value == NULL)
     {
         result = 0;
