@@ -310,6 +310,28 @@ CTEST_FUNCTION(item_list_remove_item_2_items_succeed)
     ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
     item_list_add_copy(handle, TEST_ITEM_1, TEST_ITEM_SIZE);
     item_list_add_copy(handle, TEST_ITEM_2, TEST_ITEM_SIZE);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+
+    int result = item_list_remove_item(handle, 1);
+
+    // assert
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(int, 1, item_list_item_count(handle));
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    // cleanup
+    item_list_destroy(handle);
+}
+
+CTEST_FUNCTION(item_list_remove_item_3_items_succeed)
+{
+    // arrange
+    ITEM_LIST_HANDLE handle = item_list_create(item_destroy_callback, NULL);
+    item_list_add_copy(handle, TEST_ITEM_1, TEST_ITEM_SIZE);
+    item_list_add_copy(handle, TEST_ITEM_2, TEST_ITEM_SIZE);
     item_list_add_copy(handle, TEST_ITEM_3, TEST_ITEM_SIZE);
     umock_c_reset_all_calls();
 
