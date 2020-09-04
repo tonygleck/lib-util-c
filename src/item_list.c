@@ -181,10 +181,7 @@ int item_list_remove_item(ITEM_LIST_HANDLE handle, size_t remove_index)
         ITEM_NODE* prev_item = NULL;
         for (size_t index = 0; index < remove_index; index++)
         {
-            if (index > 0)
-            {
-                prev_item = rm_pos;
-            }
+            prev_item = rm_pos;
             rm_pos = rm_pos->next;
         }
         // If the iterator points to this item
@@ -205,6 +202,8 @@ int item_list_remove_item(ITEM_LIST_HANDLE handle, size_t remove_index)
                 handle->destroy_cb(handle->user_ctx, rm_pos->node_item);
             }
         }
+
+        // If prev item is NULL then we're moving the head node
         if (prev_item == NULL)
         {
             handle->head_node = rm_pos->next;
