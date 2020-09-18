@@ -10,8 +10,9 @@
 #include "lib-util-c/threadpool.h"
 #include "lib-util-c/mutex_mgr.h"
 #include "lib-util-c/condition_mgr.h"
+#include "lib-util-c/atomic_operations.h"
 
-#define MIN_NUM_OF_THREADS  3
+#define MIN_NUM_OF_THREADS  2
 
 typedef struct POOL_WORK_ITEM_TAG
 {
@@ -24,8 +25,9 @@ typedef struct THREADPOOL_INFO_TAG
 {
     POOL_WORK_ITEM* work_queue;
     POOL_WORK_ITEM* work_tail;
-    size_t active_work_items;
-    size_t active_threads;
+    long active_work_items;
+    size_t num_of_threads;
+    long active_threads;
     MUTEX_HANDLE mutex;
     SIGNAL_HANDLE signal;
     bool continue_processing;
@@ -70,46 +72,77 @@ static void pool_worker_func(void* param)
     {
         POOL_WORK_ITEM* work_item;
         bool cont_processing = true;
+        (void)atomic_increment(&pool_info->active_threads);
+
         do
         {
             // Check to see if there is any work to do
-            mutex_mgr_lock(pool_info->mutex);
-
-            while (pool_info->work_queue == NULL && pool_info->continue_processing)
+            if (mutex_mgr_lock(pool_info->mutex) == 0)
             {
-                // Wait's here for a work item to come in
-                condition_mgr_wait(pool_info->signal, pool_info->mutex);
+                while (pool_info->work_queue == NULL && (cont_processing = pool_info->continue_processing))
+                {
+                    // Wait's here for a work item to come in
+                    condition_mgr_wait(pool_info->signal, pool_info->mutex);
+                }
+                work_item = pop_top_item(pool_info);
+                mutex_mgr_unlock(pool_info->mutex);
             }
-            if (!pool_info->continue_processing)
+            else
+            {
+                work_item = NULL;
+            }
+
+            if (!cont_processing)
             {
                 // If we're getting destroyed then break out of the loop
                 break;
             }
 
-            work_item = pop_top_item(pool_info);
-            pool_info->active_work_items++;
-            mutex_mgr_unlock(pool_info->mutex);
-
-            if (work_item == NULL)
+            if (work_item != NULL)
             {
-                // TODO: Increment work count
+                (void)atomic_increment(&pool_info->active_work_items);
+
                 work_item->work_func(work_item->parameter);
                 free(work_item);
-                // TODO: Decrement work counter here
+
+                (void)atomic_decrement(&pool_info->active_work_items);
             }
 
             // Check to see if it's time to stop
-            mutex_mgr_lock(pool_info->mutex);
-            pool_info->active_work_items--;
-            if (!(cont_processing = pool_info->continue_processing) && pool_info->active_work_items == 0 && pool_info->work_queue == NULL)
+            if (mutex_mgr_lock(pool_info->mutex) == 0)
             {
-                condition_mgr_signal(pool_info->signal);
+                if (!(cont_processing = pool_info->continue_processing) && pool_info->active_work_items == 0 && pool_info->work_queue == NULL)
+                {
+                    condition_mgr_signal(pool_info->signal);
+                }
+                mutex_mgr_unlock(pool_info->mutex);
             }
-            mutex_mgr_unlock(pool_info->mutex);
         } while (cont_processing);
 
-
+        (void)atomic_decrement(&pool_info->active_threads);
     }
+}
+
+static int initialize_threadpool(THREADPOOL_INFO* pool_info)
+{
+    int result = 0;
+    THREAD_MGR_HANDLE thread;
+    for (size_t index = 0; index < pool_info->num_of_threads; index++)
+    {
+        // Create a new thread for each thread
+        if ((thread = thread_mgr_init(pool_worker_func, pool_info)) == NULL)
+        {
+            log_error("Failure creating pool thread");
+            result = __LINE__;
+            break;
+        }
+        else if (thread_mgr_detach(thread) != 0)
+        {
+            result = __LINE__;
+            break;
+        }
+    }
+    return result;
 }
 
 THREADPOOL_HANDLE threadpool_create(size_t init_num)
@@ -123,9 +156,10 @@ THREADPOOL_HANDLE threadpool_create(size_t init_num)
     {
         memset(result, 0, sizeof(THREADPOOL_INFO) );
         result->continue_processing = true;
-        if (init_num < MIN_NUM_OF_THREADS)
+        result->num_of_threads = init_num;
+        //if (result->num_of_threads < MIN_NUM_OF_THREADS)
         {
-            init_num = thread_mgr_get_num_proc();
+        //    result->num_of_threads = thread_mgr_get_num_proc();
         }
 
         if (mutex_mgr_create(&result->mutex) != 0)
@@ -141,35 +175,11 @@ THREADPOOL_HANDLE threadpool_create(size_t init_num)
             free(result);
             result = NULL;
         }
-        else
+        else if (initialize_threadpool(result) != 0)
         {
-            bool thread_failed = false;
-            THREAD_MGR_HANDLE thread;
-            for (size_t index = 0; index < init_num; index++)
-            {
-                // Create a new thread for each thread
-                if ((thread = thread_mgr_init(pool_worker_func, result)) == NULL)
-                {
-                    log_error("Failure creating pool thread");
-                    thread_failed = true;
-                    break;
-                }
-                else
-                {
-                    if (thread_mgr_detach(thread) != 0)
-                    {
-                        thread_failed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (thread_failed)
-            {
-                log_error("Failure creating threads");
-                threadpool_destroy(result);
-                result = NULL;
-            }
+            log_error("Failure creating threads");
+            threadpool_destroy(result);
+            result = NULL;
         }
     }
     return result;
@@ -198,14 +208,22 @@ void threadpool_destroy(THREADPOOL_HANDLE handle)
     }
 }
 
-int threadpool_start(THREADPOOL_HANDLE handle)
-{
-
-}
-
 int threadpool_stop(THREADPOOL_HANDLE handle)
 {
-
+    int result;
+    if (handle == NULL)
+    {
+        log_error("Invalid parameter specified");
+        result = __LINE__;
+    }
+    else
+    {
+        mutex_mgr_lock(handle->mutex);
+        handle->continue_processing = false;
+        mutex_mgr_unlock(handle->mutex);
+        result = 0;
+    }
+    return result;
 }
 
 int threadpool_initiate_work(THREADPOOL_HANDLE handle, THREAD_START_FUNC start_func, void* param)
@@ -226,7 +244,7 @@ int threadpool_initiate_work(THREADPOOL_HANDLE handle, THREAD_START_FUNC start_f
         }
         else
         {
-            if (mutex_mgr_lock(handle->mutex) != 0)
+            if (mutex_mgr_lock(handle->mutex) == 0)
             {
                 // add work_item to the list
                 if (handle->work_queue == NULL)
@@ -262,19 +280,16 @@ int threadpool_wait_for_idle(THREADPOOL_HANDLE handle)
     }
     else
     {
-        mutex_mgr_lock(handle->mutex);
         do
         {
-            if (handle->continue_processing && handle->active_work_items != 0)
-            {
-                condition_mgr_wait(handle->signal, handle->mutex);
-            }
-            else
+            mutex_mgr_lock(handle->mutex);
+            if (!handle->continue_processing || handle->active_work_items == 0)
             {
                 break;
             }
+            mutex_mgr_unlock(handle->mutex);
+            condition_mgr_wait(handle->signal, handle->mutex);
         } while (true);
-        mutex_mgr_unlock(handle->mutex);
         result = 0;
     }
     return result;
@@ -290,19 +305,17 @@ int threadpool_wait_for_stop(THREADPOOL_HANDLE handle)
     }
     else
     {
-        mutex_mgr_lock(handle->mutex);
         do
         {
-            if (handle->active_threads != 0)
-            {
-                condition_mgr_wait(handle->signal, handle->mutex);
-            }
-            else
+            condition_mgr_wait(handle->signal, handle->mutex);
+
+            mutex_mgr_lock(handle->mutex);
+            if (handle->active_threads == 0)
             {
                 break;
             }
+            mutex_mgr_unlock(handle->mutex);
         } while (true);
-        mutex_mgr_unlock(handle->mutex);
         result = 0;
     }
     return result;

@@ -14,7 +14,6 @@ typedef struct THREADPOOL_INFO_TAG* THREADPOOL_HANDLE;
 
 MOCKABLE_FUNCTION(, THREADPOOL_HANDLE, threadpool_create, size_t, init_num);
 MOCKABLE_FUNCTION(, void, threadpool_destroy, THREADPOOL_HANDLE, handle);
-MOCKABLE_FUNCTION(, int, threadpool_start, THREADPOOL_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, threadpool_stop, THREADPOOL_HANDLE, handle);
 MOCKABLE_FUNCTION(, int, threadpool_initiate_work, THREADPOOL_HANDLE, handle, THREAD_START_FUNC, start_func, void*, param);
 MOCKABLE_FUNCTION(, int, threadpool_wait_for_idle, THREADPOOL_HANDLE, handle);

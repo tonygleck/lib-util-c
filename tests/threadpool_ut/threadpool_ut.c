@@ -45,6 +45,7 @@ static void my_mem_shim_free(void* ptr)
 #include "lib-util-c/mutex_mgr.h"
 #include "lib-util-c/condition_mgr.h"
 #include "lib-util-c/thread_mgr.h"
+#include "lib-util-c/atomic_operations.h"
 
 MOCKABLE_FUNCTION(, void, test_thread_start_func, void*, parameter);
 
@@ -61,6 +62,8 @@ static THREAD_START_FUNC g_thread_function;
 static void* g_thread_param;
 static MUTEX_HANDLE g_mutex_handle;
 static SIGNAL_HANDLE g_signal_handle;
+static THREADPOOL_HANDLE g_threadpool_wait_stop;
+static THREADPOOL_HANDLE g_threadpool_signal_stop;
 
 static int my_mutex_mgr_create(MUTEX_HANDLE* handle)
 {
@@ -103,6 +106,24 @@ static int my_condition_mgr_init(SIGNAL_HANDLE* handle)
 
 static void my_condition_mgr_deinit(SIGNAL_HANDLE handle)
 {
+}
+
+static int my_condition_mgr_wait(SIGNAL_HANDLE handle, MUTEX_HANDLE mutex)
+{
+    if (g_threadpool_wait_stop != NULL)
+    {
+        threadpool_stop(g_threadpool_wait_stop);
+    }
+    return 0;
+}
+
+static int my_condition_mgr_signal(SIGNAL_HANDLE handle)
+{
+    if (g_threadpool_signal_stop != NULL)
+    {
+        threadpool_stop(g_threadpool_signal_stop);
+    }
+    return 0;
 }
 
 static THREAD_MGR_HANDLE my_thread_mgr_init(THREAD_START_FUNC start_func, void* parameter)
@@ -228,6 +249,8 @@ CTEST_SUITE_INITIALIZE()
     REGISTER_GLOBAL_MOCK_HOOK(condition_mgr_init, my_condition_mgr_init);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(condition_mgr_init, __LINE__);
     REGISTER_GLOBAL_MOCK_HOOK(condition_mgr_deinit, my_condition_mgr_deinit);
+    REGISTER_GLOBAL_MOCK_HOOK(condition_mgr_wait, my_condition_mgr_wait);
+    REGISTER_GLOBAL_MOCK_FAIL_RETURN(condition_mgr_wait, __LINE__);
 
     REGISTER_GLOBAL_MOCK_HOOK(thread_mgr_init, my_thread_mgr_init);
     REGISTER_GLOBAL_MOCK_FAIL_RETURN(thread_mgr_init, NULL);
@@ -245,7 +268,8 @@ CTEST_FUNCTION_INITIALIZE()
     umock_c_reset_all_calls();
     g_thread_function = NULL;
     g_thread_param = NULL;
-
+    g_threadpool_wait_stop = NULL;
+    g_threadpool_signal_stop = NULL;
 }
 
 CTEST_FUNCTION_CLEANUP()
@@ -454,6 +478,143 @@ CTEST_FUNCTION(threadpool_initiate_work_fail)
     //cleanup
     threadpool_destroy(handle);
     umock_c_negative_tests_deinit();
+}
+
+CTEST_FUNCTION(threadpool_worker_func_succeed)
+{
+    //arrange
+    THREADPOOL_HANDLE handle = threadpool_create(THREADPOOL_MIN_INIT_NUM);
+    (void)threadpool_initiate_work(handle, test_thread_start_func, g_thread_start_param);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(atomic_increment(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(test_thread_start_func(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(free(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(atomic_decrement(IGNORED_ARG));
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    //STRICT_EXPECTED_CALL(condition_mgr_signal(g_signal_handle)).IgnoreArgument_signal_item().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(condition_mgr_wait(g_signal_handle, g_mutex_handle)).IgnoreArgument_signal_item().CallCannotFail();
+    // To stop processing
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+
+    //act
+    g_threadpool_wait_stop = handle;
+    g_thread_function(g_thread_param);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+    threadpool_destroy(handle);
+}
+
+CTEST_FUNCTION(threadpool_worker_func_no_items_succeed)
+{
+    //arrange
+    THREADPOOL_HANDLE handle = threadpool_create(THREADPOOL_MIN_INIT_NUM);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(condition_mgr_wait(g_signal_handle, g_mutex_handle)).IgnoreArgument_signal_item().CallCannotFail();
+    // To stop processing
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+
+    //act
+    g_threadpool_wait_stop = handle;
+    g_thread_function(g_thread_param);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+    threadpool_destroy(handle);
+}
+
+CTEST_FUNCTION(threadpool_worker_func_param_NULL_succeed)
+{
+    //arrange
+    THREADPOOL_HANDLE handle = threadpool_create(THREADPOOL_MIN_INIT_NUM);
+    umock_c_reset_all_calls();
+
+    //act
+    g_thread_function(NULL);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+    threadpool_destroy(handle);
+}
+
+CTEST_FUNCTION(threadpool_wait_for_idle_handle_NULL_fail)
+{
+    //arrange
+
+    //act
+    int result = threadpool_wait_for_idle(NULL);
+
+    //assert
+    CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+}
+
+CTEST_FUNCTION(threadpool_wait_for_idle_succeed)
+{
+    //arrange
+    THREADPOOL_HANDLE handle = threadpool_create(THREADPOOL_MIN_INIT_NUM);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(condition_mgr_wait(g_signal_handle, g_mutex_handle)).IgnoreArgument_signal_item().CallCannotFail();
+    // To stop processing
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+
+    //act
+    int result = threadpool_wait_for_idle(handle);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+    threadpool_destroy(handle);
+}
+
+CTEST_FUNCTION(threadpool_wait_for_stop_succeed)
+{
+    //arrange
+    THREADPOOL_HANDLE handle = threadpool_create(THREADPOOL_MIN_INIT_NUM);
+    umock_c_reset_all_calls();
+
+    STRICT_EXPECTED_CALL(condition_mgr_wait(g_signal_handle, g_mutex_handle)).IgnoreArgument_signal_item().CallCannotFail();
+    // To stop processing
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_lock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+    STRICT_EXPECTED_CALL(mutex_mgr_unlock(g_mutex_handle)).IgnoreArgument_handle().CallCannotFail();
+
+    //act
+    int result = threadpool_wait_for_stop(handle);
+
+    //assert
+    CTEST_ASSERT_ARE_EQUAL(int, 0, result);
+    CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
+
+    //cleanup
+    threadpool_destroy(handle);
 }
 
 CTEST_END_TEST_SUITE(threadpool_ut)
