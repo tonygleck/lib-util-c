@@ -15,6 +15,7 @@ static int i = 0;
 #include "lib-util-c/item_map.h"
 #include "lib-util-c/thread_mgr.h"
 #include "lib-util-c/buffer_alloc.h"
+#include "lib-util-c/sha_algorithms.h"
 
 #define START_HASH_VALUE    5381
 

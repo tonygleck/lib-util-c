@@ -46,6 +46,9 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/file_mgr.c
     ${PROJECT_SOURCE_DIR}/src/item_list.c
     ${PROJECT_SOURCE_DIR}/src/item_map.c
+    ${PROJECT_SOURCE_DIR}/src/sha_algorithms.c
+    ${PROJECT_SOURCE_DIR}/src/sha256_impl.c
+    ${PROJECT_SOURCE_DIR}/src/sha512_impl.c
     ${PROJECT_SOURCE_DIR}/src/sys_debug_shim.c
 )
 set(lib_header_files
@@ -61,6 +64,9 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_map.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/mutex_mgr.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sha_algorithms.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sha256_impl.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sha512_impl.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/sys_debug_shim.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/thread_mgr.h
 )

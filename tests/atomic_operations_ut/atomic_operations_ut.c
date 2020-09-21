@@ -2,14 +2,10 @@
 
 #ifdef __cplusplus
 #include <cstdlib>
-#else
-#include <stdlib.h>
-#endif
-
-#ifdef __cplusplus
 #include <cstddef>
 #include <ctime>
 #else
+#include <stdlib.h>
 #include <stddef.h>
 #include <time.h>
 #endif
