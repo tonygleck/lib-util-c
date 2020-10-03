@@ -257,6 +257,7 @@ CTEST_FUNCTION(thread_mgr_detach_fail)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     //cleanup
+    (void)thread_mgr_join(handle);
 }
 
 CTEST_FUNCTION(thread_mgr_detach_handle_NULL_succeed)
@@ -288,6 +289,7 @@ CTEST_FUNCTION(thread_worker_func_succeed)
     CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
 
     //cleanup
+    (void)thread_mgr_join(handle);
 }
 
 CTEST_END_TEST_SUITE(thread_mgr_posix_ut)

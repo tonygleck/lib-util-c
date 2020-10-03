@@ -16,7 +16,7 @@ pushd $build_dir
 
 cmake -Dlib_util_c_ut:BOOL=ON -DCMAKE_BUILD_TYPE=Debug ../..
 make -j
-ctest -C "debug" -V -T memcheck
+ctest -C "debug" -V -j
 
 pushd $coverage_dir
 
