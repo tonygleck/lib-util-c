@@ -52,6 +52,9 @@ function(build_test_project whatIsBuilding folder)
     endif()
 
     add_test(NAME ${whatIsBuilding} COMMAND $<TARGET_FILE:${whatIsBuilding}_exe>)
+    add_test(NAME ${whatIsBuilding}_valgrind COMMAND valgrind                 --num-callers=100 --error-exitcode=1 --leak-check=full --track-origins=yes $<TARGET_FILE:${whatIsBuilding}_exe>)
+    add_test(NAME ${whatIsBuilding}_helgrind COMMAND valgrind --tool=helgrind --num-callers=100 --error-exitcode=1                                       $<TARGET_FILE:${whatIsBuilding}_exe>)
+    add_test(NAME ${whatIsBuilding}_drd      COMMAND valgrind --tool=drd      --num-callers=100 --error-exitcode=1                                       $<TARGET_FILE:${whatIsBuilding}_exe>)
 endfunction()
 
 function(enable_coverage_testing)
