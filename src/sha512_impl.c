@@ -206,7 +206,7 @@ static int sha512_retrieve_result(SHA_IMPL_HANDLE sha_handle, uint8_t* msg_diges
     int result;
     if (sha_handle == NULL || msg_digest == NULL || digest_len == 0)
     {
-        log_error("Invalid parameter specified sha_handle: %p, msg_digest: %p, digest_len: %lu", sha_handle, msg_digest, digest_len);
+        log_error("Invalid parameter specified sha_handle: %p, msg_digest: %p, digest_len: %zu", sha_handle, msg_digest, digest_len);
         result = __LINE__;
     }
     else if (digest_len < SHA512_HASH_SIZE)
@@ -253,7 +253,7 @@ static int sha512_process_hash(SHA_IMPL_HANDLE sha_handle, const uint8_t* msg_ar
     int result;
     if (sha_handle == NULL || msg_array == NULL || array_len == 0)
     {
-        log_error("Invalid parameter specified sha_handle: %p, msg_array: %p, array_len: %lu", sha_handle, msg_array, array_len);
+        log_error("Invalid parameter specified sha_handle: %p, msg_array: %p, array_len: %zu", sha_handle, msg_array, array_len);
         result = __LINE__;
     }
     else
