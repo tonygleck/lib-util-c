@@ -61,7 +61,7 @@ int sha_algorithms_process(SHA_CTX_HANDLE handle, const uint8_t* msg_array, size
     int result;
     if (handle == NULL || msg_array == NULL || array_len == 0 || msg_digest == 0)
     {
-        log_error("Invalid parameter specified handle: %p, msg_array: %p, array_len: %lu, msg_digest: %p", handle, msg_array, array_len, msg_digest);
+        log_error("Invalid parameter specified handle: %p, msg_array: %p, array_len: %zu, msg_digest: %p", handle, msg_array, array_len, msg_digest);
         result = __LINE__;
     }
     else
