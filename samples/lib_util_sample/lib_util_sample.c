@@ -16,6 +16,7 @@ static int i = 0;
 #include "lib-util-c/thread_mgr.h"
 #include "lib-util-c/buffer_alloc.h"
 #include "lib-util-c/sha_algorithms.h"
+#include "lib-util-c/dllist.h"
 
 #define START_HASH_VALUE    5381
 
@@ -44,9 +45,71 @@ typedef struct CLIENT_E2E_DATA_TAG
     BYTE_BUFFER sent_data;
 } CLIENT_E2E_DATA;
 
+typedef struct TEST_LIST_ITEM_TAG
+{
+    DLLIST_ENTRY dlist_entry;
+    const char* test_string;
+    size_t test_value;
+    size_t offset;
+} TEST_LIST_ITEM;
+
+static void test_dlist_items(void)
+{
+    DLLIST_ENTRY list_items;
+
+    dllist_init_list_head(&list_items);
+
+    TEST_LIST_ITEM test_items_1 = {0};
+    TEST_LIST_ITEM test_items_2 = {0};
+    TEST_LIST_ITEM test_items_3 = {0};
+    TEST_LIST_ITEM test_items_4 = {0};
+    TEST_LIST_ITEM test_items_5 = {0};
+
+    test_items_1.test_string = "test_string_1";
+    test_items_1.test_value = 1;
+    dllist_insert_tail(&list_items, &test_items_1.dlist_entry);
+
+    test_items_2.test_string = "test_string_2";
+    test_items_2.test_value = 2;
+    dllist_insert_tail(&list_items, &test_items_2.dlist_entry);
+
+    test_items_3.test_string = "test_string_3";
+    test_items_3.test_value = 3;
+    dllist_insert_tail(&list_items, &test_items_3.dlist_entry);
+
+    test_items_4.test_string = "test_string_4";
+    test_items_4.test_value = 4;
+    dllist_insert_tail(&list_items, &test_items_4.dlist_entry);
+
+    test_items_5.test_string = "test_string_5";
+    test_items_5.test_value = 5;
+    dllist_insert_tail(&list_items, &test_items_5.dlist_entry);
+
+    size_t bytes_required = 100;
+    do
+    {
+        /* code */
+    } while (bytes_required != 0);
+
+
+    PDLLIST_ENTRY list_entry = list_items.fwd_link;
+    while (list_entry != &list_items)
+    {
+        TEST_LIST_ITEM* list_item = CONTAINING_RECORD(list_entry, TEST_LIST_ITEM, dlist_entry);
+        printf("Item %s\n", list_item->test_string);
+
+        list_entry = dllist_remove_head(list_entry);
+        //list_entry->fwd_link;
+    }
+    printf("Should be empty %s", dllist_is_empty(&list_items) == 0 ? "true" : "false" );
+}
+
 int main()
 {
     printf("Starting\r\n");
+
+    test_dlist_items();
+
     unsigned char buffer[128];
     for (size_t index = 0; index < 128; index++)
     {
