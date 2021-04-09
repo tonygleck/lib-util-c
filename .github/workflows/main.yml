@@ -55,7 +55,7 @@ jobs:
           mkdir cmake\build
           cd cmake\build
           cmake ../.. -Dlib_util_c_ut:BOOL=ON
-          msbuild /m patchcords.sln /p:Configuration=Debug
+          msbuild /m lib-util-c.sln /p:Configuration=Debug
 
       # Runs a single command using the runners shell
       - name: Run tests on the windows build
