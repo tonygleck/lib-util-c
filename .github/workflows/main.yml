@@ -54,7 +54,7 @@ jobs:
           cd ${{ github.workspace }}
           mkdir cmake\build
           cd cmake\build
-          cmake ../.. -Dpatchcords_ut:BOOL=ON -Denable_tls_lib:BOOL=ON
+          cmake ../.. -Dlib_util_c_ut:BOOL=ON
           msbuild /m patchcords.sln /p:Configuration=Debug
 
       # Runs a single command using the runners shell
