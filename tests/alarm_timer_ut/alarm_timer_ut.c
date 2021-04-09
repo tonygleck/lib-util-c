@@ -166,7 +166,7 @@ CTEST_FUNCTION(alarm_timer_reset_succeed)
     umock_c_reset_all_calls();
 
     // act
-    sleep_for_now((expire_time*2)*500);
+    sleep_for_now((unsigned int)((expire_time*2)*500));
     alarm_timer_reset(handle);
     bool result = alarm_timer_is_expired(handle);
 
@@ -210,7 +210,7 @@ CTEST_FUNCTION(alarm_timer_is_expired_true_succeed)
     umock_c_reset_all_calls();
 
     // act
-    sleep_for_now((expire_time*3)*1000);
+    sleep_for_now((unsigned int)((expire_time*3)*1000));
     bool result = alarm_timer_is_expired(handle);
 
     // assert

@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #ifndef MEMORY_DEBUG_SHIM
 
 #ifndef SIZE_MAX
@@ -362,5 +366,27 @@ void mem_shim_reset(void)
         //(void)Unlock(gballocThreadSafeLock);
     }
 }
+
+#ifdef WIN32
+HANDLE sys_shim_CreateMutex(LPSECURITY_ATTRIBUTES lpMutexAttributes, BOOL bInitialOwner, LPCSTR lpName)
+{
+    return CreateMutex(lpMutexAttributes, bInitialOwner, lpName);
+}
+
+BOOL sys_shim_CloseHandle(HANDLE hObject)
+{
+    return CloseHandle(hObject);
+}
+
+DWORD sys_shim_WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds)
+{
+    return WaitForSingleObject(hHandle, dwMilliseconds);
+}
+
+BOOL sys_shim_ReleaseMutex(HANDLE hMutex)
+{
+    return ReleaseMutex(hMutex);
+}
+#endif
 
 #endif // MEMORY_DEBUG_SHIM

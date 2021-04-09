@@ -23,6 +23,16 @@ MOCKABLE_FUNCTION(, size_t, mem_shim_get_current_memory);
 MOCKABLE_FUNCTION(, size_t, mem_shim_get_allocations);
 MOCKABLE_FUNCTION(, void, mem_shim_reset);
 
+#ifdef WIN32
+
+#include <windows.h>
+
+MOCKABLE_FUNCTION(, HANDLE, sys_shim_CreateMutex, LPSECURITY_ATTRIBUTES, lpMutexAttributes, BOOL, bInitialOwner, LPCSTR, lpName);
+MOCKABLE_FUNCTION(, BOOL, sys_shim_CloseHandle, HANDLE, hObject);
+MOCKABLE_FUNCTION(, DWORD, sys_shim_WaitForSingleObject, HANDLE, hHandle, DWORD, dwMilliseconds);
+MOCKABLE_FUNCTION(, BOOL, sys_shim_ReleaseMutex, HANDLE, hMutex);
+#endif
+
 //#ifdef USE_MEM_SHIM_ALLOCATOR
 /* Unfortunately this is still needed here for things to still compile when using _CRTDBG_MAP_ALLOC.
 That is because there is a rogue component (most likely CppUnitTest) including crtdbg. */
@@ -42,6 +52,13 @@ That is because there is a rogue component (most likely CppUnitTest) including c
 #define free mem_shim_free
 #endif
 //#endif // USE_MEM_SHIM_ALLOCATOR
+
+#ifdef WIN32
+#define CreateMutexW        sys_shim_CreateMutex
+#define CloseHandle         sys_shim_CloseHandle
+#define WaitForSingleObject sys_shim_WaitForSingleObject
+#define ReleaseMutex        sys_shim_ReleaseMutex
+#endif
 
 #else // USE_MEMORY_DEBUG_SHIM
 
