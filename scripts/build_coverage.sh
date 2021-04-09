@@ -16,7 +16,7 @@ pushd $build_dir
 
 cmake -Dlib_util_c_ut:BOOL=ON -DCMAKE_BUILD_TYPE=Debug ../..
 make -j
-ctest -C "debug" -V -j
+ctest -C "debug" -V --output-on-failure -j
 
 pushd $coverage_dir
 
