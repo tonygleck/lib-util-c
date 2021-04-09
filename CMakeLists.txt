@@ -43,6 +43,7 @@ set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/binary_tree.c
     ${PROJECT_SOURCE_DIR}/src/buffer_alloc.c
     ${PROJECT_SOURCE_DIR}/src/crt_extensions.c
+    ${PROJECT_SOURCE_DIR}/src/dllist.c
     ${PROJECT_SOURCE_DIR}/src/file_mgr.c
     ${PROJECT_SOURCE_DIR}/src/item_list.c
     ${PROJECT_SOURCE_DIR}/src/item_map.c
@@ -59,6 +60,7 @@ set(lib_header_files
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/binary_tree.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/buffer_alloc.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/crt_extensions.h
+    ${PROJECT_SOURCE_DIR}/inc/lib-util-c/dllist.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/file_mgr.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/interval_timer.h
     ${PROJECT_SOURCE_DIR}/inc/lib-util-c/item_list.h

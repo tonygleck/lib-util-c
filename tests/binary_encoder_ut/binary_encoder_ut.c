@@ -301,7 +301,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     {
         //arrange
         const char* source = "AAAAAAAAAAAAAA==_DO_NOT_ENCODE";
-        const unsigned char src_encoded[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        const unsigned char src_encoded[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
         unsigned char output[64];
         size_t output_len = 64;
 
@@ -309,9 +309,9 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
         int result = bin_encoder_32_decode_partial(source, 16, output, &output_len);
 
         //assert
-        CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);
+        CTEST_ASSERT_ARE_EQUAL(int, 0, result);
         CTEST_ASSERT_ARE_EQUAL(int, 0, memcmp(src_encoded, output, output_len), "bin_encoder_32_decode_partial failure in test");
-        CTEST_ASSERT_ARE_EQUAL(size_t, 10, output_len);
+        CTEST_ASSERT_ARE_EQUAL(size_t, 9, output_len);
 
         //cleanup
     }

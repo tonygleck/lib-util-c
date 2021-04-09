@@ -6,6 +6,7 @@
 
 #include "lib-util-c/app_logging.h"
 #include "lib-util-c/mutex_mgr.h"
+#include "lib-util-c/sys_debug_shim.h"
 
 int mutex_mgr_create(MUTEX_HANDLE* handle)
 {
@@ -54,6 +55,7 @@ int mutex_mgr_lock(MUTEX_HANDLE handle)
         }
         else
         {
+            log_error("failure waiting for handle");
             result = __LINE__;
         }
     }
@@ -77,6 +79,7 @@ int mutex_mgr_trylock(MUTEX_HANDLE handle)
         }
         else
         {
+            log_error("failure waiting for handle");
             result = __LINE__;
         }
     }
@@ -95,6 +98,7 @@ int mutex_mgr_unlock(MUTEX_HANDLE handle)
     {
         if (!ReleaseMutex(handle))
         {
+            log_error("failure releasing mutex");
             result = __LINE__;
         }
         else

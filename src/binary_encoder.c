@@ -205,7 +205,7 @@ static int decode_base32_source_value(const char* source, size_t src_len, unsign
             unsigned char* dest_buff = output;
 
             const char* iterator = source;
-            while (*iterator != '\0')
+            while (*iterator != '\0' && (dest_size+1) < allocation_len)
             {
                 for (size_t index = 0; index < BASE32_INPUT_SIZE; index++)
                 {
