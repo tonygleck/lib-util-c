@@ -55,7 +55,7 @@ THREAD_MGR_HANDLE thread_mgr_init(THREAD_START_FUNC start_func, void* parameter)
     return result;
 }
 
-int thread_mgr_join(THREAD_MGR_HANDLE handle)
+int thread_mgr_terminate_wait(THREAD_MGR_HANDLE handle)
 {
     int result;
     if (handle == NULL)

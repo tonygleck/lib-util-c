@@ -15,7 +15,11 @@ typedef struct THREAD_MGR_INFO_TAG* THREAD_MGR_HANDLE;
 typedef int(*THREAD_START_FUNC)(void*);
 
 MOCKABLE_FUNCTION(, THREAD_MGR_HANDLE, thread_mgr_init, THREAD_START_FUNC, start_func, void*, parameter);
-MOCKABLE_FUNCTION(, int, thread_mgr_join, THREAD_MGR_HANDLE, handle);
+
+// Wait for thread to terminate
+MOCKABLE_FUNCTION(, int, thread_mgr_terminate_wait, THREAD_MGR_HANDLE, handle);
+
+// Release the thread from it's resources allowing for clean up
 MOCKABLE_FUNCTION(, int, thread_mgr_detach, THREAD_MGR_HANDLE, handle);
 
 MOCKABLE_FUNCTION(, void, thread_mgr_sleep, size_t, ms);

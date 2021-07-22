@@ -17,6 +17,7 @@ static int i = 0;
 #include "lib-util-c/buffer_alloc.h"
 #include "lib-util-c/sha_algorithms.h"
 #include "lib-util-c/dllist.h"
+#include "lib-util-c/threadpool.h"
 
 #define START_HASH_VALUE    5381
 
@@ -104,25 +105,51 @@ static void test_dlist_items(void)
     printf("Should be empty %s", dllist_is_empty(&list_items) == 0 ? "true" : "false" );
 }
 
+static const char* test_string[] =
+{
+    "string 0",
+    "string 1",
+    "string 2",
+    "string 3",
+    "string 4",
+    "string 5"
+};
+
+volatile uint32_t g_thread_cntr;
+static void threadpool_work_routine(void* arg)
+{
+    const char* incoming_string = (const char*)arg;
+
+
+}
+
+static void show_threadpool_sample(void)
+{
+    size_t threadpool_size = sizeof(test_string)/sizeof(test_string[0]);
+    THREADPOOL_HANDLE threadpool_handle = threadpool_create(threadpool_size);
+    if (threadpool_handle == NULL)
+    {
+        printf("Failure creating threadpool");
+    }
+    else
+    {
+
+        for (size_t index = 0; index < threadpool_size; index++)
+        {
+            threadpool_add_item(threadpool_handle, threadpool_work_routine, (void*)test_string[index]);
+        }
+
+        threadpool_destroy(threadpool_handle);
+    }
+}
+
 int main()
 {
     printf("Starting\r\n");
 
-    test_dlist_items();
+    //test_dlist_items();
 
-    unsigned char buffer[128];
-    for (size_t index = 0; index < 128; index++)
-    {
-        buffer[index] = 0x10 + index;
-    }
-
-    CLIENT_E2E_DATA e2e_data = {0};
-    for (size_t index = 0; index < 10; index++)
-    {
-        byte_buffer_construct(&e2e_data.sent_data, buffer, 128);
-    printf("payload size %ld\n", e2e_data.sent_data.payload_size);
-    }
-    byte_buffer_free(&e2e_data.sent_data);
+    show_threadpool_sample();
 
     // struct sigevent sig;
     // sig.sigev_notify = SIGEV_THREAD;
