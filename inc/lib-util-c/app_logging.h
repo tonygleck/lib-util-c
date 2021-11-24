@@ -23,7 +23,6 @@ typedef enum log_category_tag
 
 #if defined _MSC_VER
 #define FUNC_NAME       __FUNCDNAME__
-#define VARIABLE_ARG    __VA_ARGS__
 #else
 #define FUNC_NAME       __func__
 #endif

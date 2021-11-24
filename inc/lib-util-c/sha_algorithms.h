@@ -14,6 +14,7 @@ extern "C" {
 #include <stddef.h>
 #endif
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
 typedef void* SHA_IMPL_HANDLE;

@@ -9,6 +9,7 @@ extern "C" {
 #include <time.h>
 #endif
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
 typedef struct FILE_MGR_INFO_TAG* FILE_MGR_HANDLE;

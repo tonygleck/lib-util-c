@@ -2,13 +2,14 @@
 
 #pragma once
 
+#include "macro_utils/macro_utils.h"
+#include "umock_c/umock_c_prod.h"
+
 #ifdef __cplusplus
 extern "C" {
 #else
 #include <stdbool.h>
 #endif
-
-#include "umock_c/umock_c_prod.h"
 
 typedef struct ALARM_TIMER_INFO_TAG
 {

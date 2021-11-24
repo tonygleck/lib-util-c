@@ -8,6 +8,7 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
 typedef struct INTERVAL_TIMER_INFO_TAG* INTERVAL_TIMER_HANDLE;
