@@ -1,6 +1,6 @@
 #Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -95,7 +95,7 @@ if (WIN32)
     )
 elseif(UNIX)
     set(lib_pal_src_files ${lib_pal_src_files}
-        ${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
+        #${PROJECT_SOURCE_DIR}/src/pal/linux/interval_timer_linux.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/atomic_operations_linux.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/condition_mgr_posix.c
         ${PROJECT_SOURCE_DIR}/src/pal/linux/thread_mgr_posix.c
