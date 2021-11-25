@@ -9,6 +9,7 @@ extern "C" {
 #include <stdint.h>
 #endif
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
 typedef struct ITEM_MAP_INFO_TAG* ITEM_MAP_HANDLE;

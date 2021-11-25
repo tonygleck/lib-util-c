@@ -47,6 +47,9 @@ static size_t TEST_ITEM_SIZE = 5;
 
 static void my_map_destroy_cb(void* user_ctx, const char* key, void* remove_value)
 {
+    (void)user_ctx;
+    (void)key;
+    (void)remove_value;
 }
 
 static int my_clone_string(char** target, const char* source)

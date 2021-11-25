@@ -7,6 +7,9 @@ extern "C" {
 #else
 #endif
 
+#include "macro_utils/macro_utils.h"
+#include "umock_c/umock_c_prod.h"
+
 #include "sha_algorithms.h"
 
 #define SHA256_HASH_SIZE    32

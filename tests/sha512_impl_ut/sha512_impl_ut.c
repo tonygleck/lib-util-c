@@ -32,7 +32,7 @@ static void my_mem_shim_free(void* ptr)
 
 #include "lib-util-c/sha512_impl.h"
 
-static const char* TEST_HASH_VALUE = "Enter The Wu-Tang: 36 Chambers";
+static const uint8_t* TEST_HASH_VALUE = (const uint8_t*)"Enter The Wu-Tang: 36 Chambers";
 static const size_t TEST_HASH_LEN = 30;
 static const uint8_t TEST_HASH_RESULT[] = {
     0xA6, 0x02, 0x90, 0x73, 0xF1, 0x0B, 0x5B, 0x63,

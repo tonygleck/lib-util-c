@@ -95,7 +95,7 @@ static void test_dlist_items(void)
     PDLLIST_ENTRY list_entry = list_items.fwd_link;
     while (list_entry != &list_items)
     {
-        TEST_LIST_ITEM* list_item = CONTAINING_RECORD(list_entry, TEST_LIST_ITEM, dlist_entry);
+        TEST_LIST_ITEM* list_item = LIST_CONTAINING_RECORD(list_entry, TEST_LIST_ITEM, dlist_entry);
         printf("Item %s\n", list_item->test_string);
 
         list_entry = dllist_remove_head(list_entry);

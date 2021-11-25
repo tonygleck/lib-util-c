@@ -1,6 +1,6 @@
 #Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 #Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -8,7 +8,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(lib-util-c
     DESCRIPTION "Library for utilities"
     LANGUAGES C)
-#project(lib-util-c)
 
 option(lib_util_c_ut "Include unittest in build" OFF)
 option(lib_util_c_sample "Include samples in build" OFF)
@@ -24,32 +23,32 @@ else()
     set(DEBUG_CONFIG OFF)
 endif()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
 include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_config.cmake")
 
+set(use_segment_heap OFF)
+
 # Add dependencies
-if (NOT TARGET azure_macro_utils_c)
+if ((NOT TARGET c_build_tools) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-build-tools/CMakeLists.txt))
+    add_subdirectory(deps/c-build-tools)
+    set_default_build_options()
+endif()
+
+if (NOT TARGET macro_utils_c)
     add_subdirectory(${PROJECT_SOURCE_DIR}/deps/macro-utils-c)
 endif()
 include_directories(${MACRO_UTILS_INC_FOLDER})
+
+if ((NOT TARGET c_logging) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-logging/CMakeLists.txt))
+    add_subdirectory(${PROJECT_SOURCE_DIR}/deps/c-logging)
+    include_directories(${PROJECT_SOURCE_DIR}/deps/c-logging/inc)
+endif()
+
 if (NOT TARGET umock_c)
     add_subdirectory(${PROJECT_SOURCE_DIR}/deps/umock-c)
 endif()
 include_directories(${UMOCK_C_INC_FOLDER})
-
-
-if ((NOT TARGET c_build_tools) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-build-tools/CMakeLists.txt))
-    add_subdirectory(deps/c-build-tools)
-    #set_default_build_options()
-endif()
-if ((NOT TARGET macro_utils_c) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/macro-utils-c/CMakeLists.txt))
-    add_subdirectory(deps/macro-utils-c)
-    include_directories(${MACRO_UTILS_INC_FOLDER})
-endif() 
-
-if ((NOT TARGET c_logging) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-logging/CMakeLists.txt))
-    add_subdirectory(deps/c-logging)
-    include_directories(deps/c-logging/inc)
-endif()
 
 set(lib_src_files
     ${PROJECT_SOURCE_DIR}/src/app_logging.c
@@ -119,6 +118,11 @@ target_link_libraries(lib-util-c ${lib_library_files})
 addCompileSettings(lib-util-c)
 compileTargetAsC99(lib-util-c)
 
+if(MSVC)
+    #use _CRT_SECURE_NO_WARNINGS by default
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Add testing
 if (${lib_util_c_ut})
     include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_test.cmake")
@@ -130,13 +134,17 @@ if (${lib_util_c_ut})
     endif()
     include_directories(${CTEST_INC_FOLDER})
 
+    if ((NOT TARGET testrunnerswitcher) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-testrunnerswitcher/CMakeLists.txt))
+        add_subdirectory(deps/c-testrunnerswitcher)
+        include_directories(${TESTRUNNERSWITCHER_INC_FOLDER})
+    endif()
+
     enable_testing()
     include (CTest)
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
-
 endif()
 
 if (${lib_util_c_sample})
-    add_subdirectory(${PROJECT_SOURCE_DIR}/samples)
+    #add_subdirectory(${PROJECT_SOURCE_DIR}/samples)
 endif()

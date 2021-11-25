@@ -10,6 +10,7 @@ extern "C" {
 #include <stddef.h>
 #endif // __cplusplus
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
 typedef struct BINARY_TREE_INFO_TAG* BINARY_TREE_HANDLE;

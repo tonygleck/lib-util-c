@@ -8,6 +8,7 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
 typedef struct THREAD_MGR_INFO_TAG* THREAD_MGR_HANDLE;

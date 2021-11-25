@@ -35,10 +35,7 @@ CTEST_BEGIN_TEST_SUITE(atomic_operations_ut)
 
 CTEST_SUITE_INITIALIZE()
 {
-    int result;
-
     (void)umock_c_init(on_umock_c_error);
-
 }
 
 CTEST_SUITE_CLEANUP()
@@ -85,13 +82,13 @@ CTEST_FUNCTION(atomic_increment_value_NULL_fail)
 CTEST_FUNCTION(atomic_increment64_succeed)
 {
     // arrange
-    uint64_t initial_value = TEST_PREINCREMENT_VALUE;
+    int64_t initial_value = TEST_PREINCREMENT_VALUE;
 
     // act
-    uint64_t result = atomic_increment64(&initial_value);
+    int64_t result = atomic_increment64(&initial_value);
 
     // assert
-    CTEST_ASSERT_ARE_EQUAL(uint64_t, result, TEST_PREINCREMENT_VALUE+1);
+    CTEST_ASSERT_ARE_EQUAL(int64_t, result, TEST_PREINCREMENT_VALUE+1);
 
     // cleanup
 }
@@ -101,10 +98,10 @@ CTEST_FUNCTION(atomic_increment64_value_NULL_fail)
     // arrange
 
     // act
-    uint64_t result = atomic_increment64(NULL);
+    int64_t result = atomic_increment64(NULL);
 
     // assert
-    CTEST_ASSERT_ARE_EQUAL(uint64_t, result, 0);
+    CTEST_ASSERT_ARE_EQUAL(int64_t, result, 0);
 
     // cleanup
 }
@@ -139,13 +136,13 @@ CTEST_FUNCTION(atomic_decrement_value_NULL_fail)
 CTEST_FUNCTION(atomic_decrement64_succeed)
 {
     // arrange
-    uint64_t initial_value = TEST_PREINCREMENT_VALUE;
+    int64_t initial_value = TEST_PREINCREMENT_VALUE;
 
     // act
-    uint64_t result = atomic_decrement64(&initial_value);
+    int64_t result = atomic_decrement64(&initial_value);
 
     // assert
-    CTEST_ASSERT_ARE_EQUAL(uint64_t, result, TEST_PREINCREMENT_VALUE-1);
+    CTEST_ASSERT_ARE_EQUAL(int64_t, result, TEST_PREINCREMENT_VALUE-1);
 
     // cleanup
 }
@@ -155,10 +152,10 @@ CTEST_FUNCTION(atomic_decrement64_value_NULL_fail)
     // arrange
 
     // act
-    uint64_t result = atomic_decrement64(NULL);
+    int64_t result = atomic_decrement64(NULL);
 
     // assert
-    CTEST_ASSERT_ARE_EQUAL(uint64_t, result, 0);
+    CTEST_ASSERT_ARE_EQUAL(int64_t, result, 0);
 
     // cleanup
 }

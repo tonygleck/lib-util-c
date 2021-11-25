@@ -17,8 +17,6 @@ typedef struct INTERVAL_TIMER_INFO_TAG
     void* user_ctx;
 } INTERVAL_TIMER_INFO;
 
-static ;
-
 static void trigger_sig_handler(union sigval val)
 {
     INTERVAL_TIMER_INFO* interval_info = (INTERVAL_TIMER_INFO*)val;

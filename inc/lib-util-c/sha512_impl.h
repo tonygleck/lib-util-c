@@ -9,11 +9,14 @@ extern "C" {
 #include <stdlib.h> 
 #endif
 
-    #include "sha_algorithms.h"
+#include "macro_utils/macro_utils.h"
+#include "umock_c/umock_c_prod.h"
 
-    #define SHA512_HASH_SIZE    64
+#include "sha_algorithms.h"
 
-    extern const SHA_HASH_INTERFACE* sha512_get_interface(void);
+#define SHA512_HASH_SIZE    64
+
+extern const SHA_HASH_INTERFACE* sha512_get_interface(void);
 
 #ifdef __cplusplus
 }

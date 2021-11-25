@@ -45,6 +45,8 @@ static size_t TEST_ITEM_SIZE = 5;
 
 static void my_item_destroy_cb(void* user_ctx, void* item)
 {
+    (void)user_ctx;
+    (void)item;
 }
 
 MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)

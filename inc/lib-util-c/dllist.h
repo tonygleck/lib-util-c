@@ -8,9 +8,10 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+#include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c_prod.h"
 
-#define CONTAINING_RECORD(address, type, field) ((type *)((uintptr_t)(address) - offsetof(type,field)))
+#define LIST_CONTAINING_RECORD(address, type, field) ((type *)((uintptr_t)(address) - offsetof(type,field)))
 
 typedef struct DLLIST_ENTRY_TAG
 {
