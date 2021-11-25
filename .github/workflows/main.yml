@@ -52,13 +52,15 @@ jobs:
       - name: Running Cmake on windows
         run: |
           cd ${{ github.workspace }}
-          mkdir cmake\build
-          cd cmake\build
-          cmake ../.. -Dlib_util_c_ut:BOOL=ON
-          msbuild /m lib-util-c.sln /p:Configuration=Debug
+          mkdir cmake
+          cd cmake
+      - name: Run CMake
+        run: cmake .. -Dlib_util_c_ut:BOOL=ON -A x64
+      - name: Run Build
+        #run: msbuild /m lib-util-c.sln /p:Configuration=Debug
+        run: cmake --build build --target all --config Debug -- -j4
 
       # Runs a single command using the runners shell
       - name: Run tests on the windows build
         run: |
-          cd cmake\build
           ctest -C "debug" -V --output-on-failure
