@@ -50,12 +50,11 @@ jobs:
       # Run cmake build on windows
       - uses: ilammy/msvc-dev-cmd@v1
       - name: Running Cmake on windows
-        run: |
-          cd ${{ github.workspace }}
-          mkdir cmake
-          cd cmake
+        run: mkdir cmake
+      - name: Where are we
+        run: pwd
       - name: Run CMake
-        run: cmake .. -Dlib_util_c_ut:BOOL=ON -A x64
+        run: cmake -B cmake -Dlib_util_c_ut:BOOL=ON -A x64
       - name: Run Build
         #run: msbuild /m lib-util-c.sln /p:Configuration=Debug
         run: cmake --build build --target all --config Debug -- -j4
