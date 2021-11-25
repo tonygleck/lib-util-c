@@ -32,7 +32,7 @@ static void my_mem_shim_free(void* ptr)
 
 #include "lib-util-c/sha256_impl.h"
 
-static const char* TEST_HASH_VALUE = "Enter The Wu-Tang: 36 Chambers";
+static const uint8_t* TEST_HASH_VALUE = (const uint8_t*)"Enter The Wu-Tang: 36 Chambers";
 static const size_t TEST_HASH_LEN = 30;
 static const uint8_t TEST_HASH_RESULT[] = {
     0xD2, 0xCC, 0xBC, 0xC0, 0xAF, 0xAE, 0x8D, 0x11,
@@ -168,7 +168,7 @@ CTEST_BEGIN_TEST_SUITE(sha256_impl_ut)
         umock_c_reset_all_calls();
 
         //act
-        int result = sha_interface->process_fn(NULL, TEST_HASH_VALUE, TEST_HASH_LEN);
+        int result = sha_interface->process_fn(NULL, (const uint8_t*)TEST_HASH_VALUE, TEST_HASH_LEN);
 
         //assert
         CTEST_ASSERT_ARE_NOT_EQUAL(int, 0, result);

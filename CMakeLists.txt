@@ -133,6 +133,11 @@ if (${lib_util_c_ut})
     endif()
     include_directories(${CTEST_INC_FOLDER})
 
+    if ((NOT TARGET testrunnerswitcher) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-testrunnerswitcher/CMakeLists.txt))
+        add_subdirectory(deps/c-testrunnerswitcher)
+        include_directories(${TESTRUNNERSWITCHER_INC_FOLDER})
+    endif()
+
     enable_testing()
     include (CTest)
 

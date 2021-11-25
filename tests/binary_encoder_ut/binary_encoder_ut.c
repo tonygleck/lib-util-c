@@ -14,6 +14,7 @@
 
 // Include the test tools.
 #include "ctest.h"
+#include "testrunnerswitcher.h"
 #include "macro_utils/macro_utils.h"
 #include "umock_c/umock_c.h"
 #include "umock_c/umocktypes_charptr.h"
@@ -164,7 +165,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     {
         //arrange
         char output[32];
-        const char* source = "";
+        const unsigned char* source = NULL;
         size_t output_len = 32;
 
         //act
@@ -217,7 +218,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     CTEST_FUNCTION(bin_encoder_32_decode_source_NULL_fail)
     {
         //arrange
-        char output[32];
+        unsigned char output[32];
         size_t output_len = 64;
 
         //act
@@ -269,7 +270,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     CTEST_FUNCTION(bin_encoder_32_decode_partial_source_NULL_fail)
     {
         //arrange
-        char output[32];
+        unsigned char output[32];
         size_t output_len = 64;
 
         //act
@@ -357,7 +358,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     {
         //arrange
         char output[32];
-        const char* source = "";
+        const unsigned char* source = (const unsigned char*)"";
         size_t output_len = 32;
 
         //act
@@ -393,7 +394,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     CTEST_FUNCTION(bin_encoder_64_decode_source_NULL_fail)
     {
         //arrange
-        char output[32];
+        unsigned char output[32];
         size_t output_len = 64;
 
         //act
@@ -445,7 +446,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     CTEST_FUNCTION(bin_encoder_64_decode_partial_source_NULL_fail)
     {
         //arrange
-        char output[32];
+        unsigned char output[32];
         size_t output_len = 32;
 
         //act
@@ -477,7 +478,7 @@ CTEST_BEGIN_TEST_SUITE(binary_encoder_ut)
     {
         //arrange
         const char* source = "AAAAAAAAAA==_DO_NOT_ENCODE";
-        char output[64];
+        unsigned char output[64];
         size_t output_len = 64;
 
         //act

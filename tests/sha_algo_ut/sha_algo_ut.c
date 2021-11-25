@@ -121,8 +121,6 @@ CTEST_BEGIN_TEST_SUITE(sha_algo_ut)
 
 CTEST_SUITE_INITIALIZE()
 {
-    int result;
-
     (void)umock_c_init(on_umock_c_error);
 
     REGISTER_UMOCK_ALIAS_TYPE(SHA_CTX_HANDLE, void*);
@@ -164,7 +162,7 @@ CTEST_FUNCTION(sha_algorithms_init_interface_NULL_fail)
 CTEST_FUNCTION(sha_algorithms_init_interface_field_NULL_fail)
 {
     // arrange
-    const SHA_HASH_INTERFACE* fail_interface;
+    const SHA_HASH_INTERFACE* fail_interface = NULL;
 
     // act
     for (size_t index = 0; index < 4; index++)
@@ -193,7 +191,7 @@ CTEST_FUNCTION(sha_algorithms_init_interface_field_NULL_fail)
         SHA_CTX_HANDLE handle = sha_algorithms_init(fail_interface);
 
         // assert
-        CTEST_ASSERT_IS_NULL(handle, "sha_algorithms_init failure in test %lu", index);
+        CTEST_ASSERT_IS_NULL(handle, "sha_algorithms_init failure in test %zu", index);
         CTEST_ASSERT_ARE_EQUAL(char_ptr, umock_c_get_expected_calls(), umock_c_get_actual_calls());
     }
 

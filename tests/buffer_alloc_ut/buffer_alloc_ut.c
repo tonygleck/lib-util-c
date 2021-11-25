@@ -195,9 +195,7 @@ CTEST_FUNCTION(string_buffer_construct_malloc_fail)
 CTEST_FUNCTION(string_buffer_construct_sprintf_buffer_NULL_fail)
 {
     // arrange
-    STRING_BUFFER buffer = { 0 };
     const char* fmt_string = "test_string_%d";
-    const char* total_string = "test_string_123";
     int value = 123;
 
     // act
@@ -214,7 +212,6 @@ CTEST_FUNCTION(string_buffer_construct_sprintf_format_NULL_fail)
 {
     // arrange
     STRING_BUFFER buffer = { 0 };
-    const char* total_string = "test_string_123";
     int value = 123;
 
     // act
@@ -254,7 +251,6 @@ CTEST_FUNCTION(string_buffer_construct_sprintf_malloc_fail)
     // arrange
     STRING_BUFFER buffer = { 0 };
     const char* fmt_string = "test_string_%d";
-    const char* total_string = "test_string_123";
     int value = 123;
 
     STRICT_EXPECTED_CALL(malloc(IGNORED_ARG)).SetReturn(NULL);
@@ -343,7 +339,6 @@ CTEST_FUNCTION(byte_buffer_construct_size_0_succeed)
     // arrange
     BYTE_BUFFER buffer = { 0 };
     const unsigned char binary_buff[] = { 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
-    size_t bin_length = 5;
 
     // act
     int result = byte_buffer_construct(&buffer, binary_buff, 0);

@@ -303,7 +303,6 @@ CTEST_FUNCTION(clone_string_with_format_fail)
 CTEST_FUNCTION(clone_string_with_size_format_target_NULL_fail)
 {
     // arrange
-    char* target;
 
     // act
     int result = clone_string_with_size_format(NULL, TEST_SOURCE_STRING, TEST_SOURCE_STRING_LEN, TEST_SOURCE_STRING_FMT, 7);
