@@ -27,6 +27,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake_configs/proj_config.cmake")
 
+set(use_segment_heap OFF)
+
 # Add dependencies
 if ((NOT TARGET c_build_tools) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-build-tools/CMakeLists.txt))
     add_subdirectory(deps/c-build-tools)
@@ -39,7 +41,6 @@ endif()
 include_directories(${MACRO_UTILS_INC_FOLDER})
 
 if ((NOT TARGET c_logging) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-logging/CMakeLists.txt))
-    message("logging is working")
     add_subdirectory(${PROJECT_SOURCE_DIR}/deps/c-logging)
     include_directories(${PROJECT_SOURCE_DIR}/deps/c-logging/inc)
 endif()
