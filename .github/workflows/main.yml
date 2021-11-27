@@ -25,7 +25,7 @@ jobs:
             name: "Windows Latest MSVC",
             os: windows-2022,
             #artifact: "windows_msvc.7z",
-            build_type: "Release",
+            build_type: "Debug",
             cc: "cl",
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
@@ -85,54 +85,4 @@ jobs:
 
       - name: Run test on ${{ matrix.config.name }}
         shell: bash
-        run: ctest -C -V --output-on-failure
-
-  #   # The type of runner that the job will run on
-  #   runs-on: ubuntu-latest
-
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #   # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-  #   - uses: actions/checkout@v2
-  #     with:
-  #       submodules: 'true'
-
-  #   - name: install valgrind
-  #     run: sudo apt-get install -y gcc valgrind cmake
-
-  #   # Runs a single command using the runners shell
-  #   - name: Run linux build script
-  #     run: $GITHUB_WORKSPACE/scripts/build_coverage.sh
-
-  # windows-build:
-  #   # The type of runner
-  #   runs-on: windows-2022
-
-  #   # Steps represent a sequence of tasks that will be executed as part of the job
-  #   steps:
-  #     - name: Setup cmake
-  #       uses: jwlawson/actions-setup-cmake@v1.8
-  #       with:
-  #         cmake-version: '3.16.x'
-
-  #     - name: Checkout repo
-  #       uses: actions/checkout@v2
-  #       with:
-  #         submodules: 'true'
-
-  #     # Run cmake build on windows
-  #     - uses: ilammy/msvc-dev-cmd@v1
-  #     - name: Running Cmake on windows
-  #       run: mkdir cmake
-  #     - name: Where are we
-  #       run: pwd
-  #     - name: Run CMake
-  #       run: cmake -B cmake -Dlib_util_c_ut:BOOL=ON -A x64
-  #     - name: Run Build
-  #       #run: msbuild /m lib-util-c.sln /p:Configuration=Debug
-  #       run: cmake --build build --target all --config Debug -- -j4
-
-  #     # Runs a single command using the runners shell
-  #     - name: Run tests on the windows build
-  #       run: |
-  #         ctest -C "debug" -V --output-on-failure
+        run: ctest -C "debug" -V --output-on-failure
