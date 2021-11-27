@@ -30,13 +30,13 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             #archiver: "7z a",
-            generators: "Visual Studio 16 2019"
+            generators: "Visual Studio 17 2022"
           }
         - {
             name: "Ubuntu_Latest_GCC",
             os: ubuntu-latest,
             #artifact: "ubuntu_gcc.7z",
-            build_type: "Release",
+            build_type: "Debug",
             cc: "gcc",
             cxx: "g++",
             #archiver: "7z a",
@@ -77,6 +77,7 @@ jobs:
           cmake -S . -B . \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}" \
+            -Dlib_util_c_ut = ON \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir
       - name: Build
         shell: bash
