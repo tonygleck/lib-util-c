@@ -24,18 +24,18 @@ jobs:
         - {
             name: "Windows Latest MSVC",
             os: windows-latest,
-            artifact: "windows_msvc.7z",
+            #artifact: "windows_msvc.7z",
             build_type: "Release",
             cc: "cl",
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
             archiver: "7z a",
-            generators: "Visual Studio 17 2022"
+            generators: "Visual Studio 16 2019"
           }
         - {
             name: "Ubuntu_Latest_GCC",
             os: ubuntu-latest,
-            artifact: "ubuntu_gcc.7z",
+            #artifact: "ubuntu_gcc.7z",
             build_type: "Release",
             cc: "gcc",
             cxx: "g++",
@@ -56,14 +56,14 @@ jobs:
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
-          choco install cmake
+          choco install ninja cmake
           cmake --version
 
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu_Latest_GCC')
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc valgrind cmake
+          sudo apt-get install -y gcc ninja valgrind cmake
           cmake --version
           gcc --version
         # cmd "${{ matrix.config.environment_script }}"
