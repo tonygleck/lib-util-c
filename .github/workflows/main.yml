@@ -23,7 +23,7 @@ jobs:
         config:
         - {
             name: "Windows Latest MSVC",
-            os: windows-latest,
+            os: windows-2022,
             #artifact: "windows_msvc.7z",
             build_type: "Release",
             cc: "cl",
@@ -81,6 +81,10 @@ jobs:
       - name: Build
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}
+
+      - name: Run test on ${{ matrix.config.name }}
+        shell: bash
+        run: ctest -C -V --output-on-failure
 
   #   # The type of runner that the job will run on
   #   runs-on: ubuntu-latest
