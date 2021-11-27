@@ -31,6 +31,8 @@ set(use_segment_heap OFF)
 
 # Add dependencies
 if ((NOT TARGET c_build_tools) AND (EXISTS ${CMAKE_CURRENT_LIST_DIR}/deps/c-build-tools/CMakeLists.txt))
+    set(run_traceability OFF)
+    set(build_traceability_tool OFF)
     add_subdirectory(deps/c-build-tools)
     set_default_build_options()
 endif()
