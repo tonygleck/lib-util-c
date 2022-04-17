@@ -16,14 +16,42 @@ typedef struct FILE_MGR_INFO_TAG
     FILE* file;
 } FILE_MGR_INFO;
 
-FILE_MGR_HANDLE file_mgr_open(const char* filename, const char* param)
+static const char* get_file_mode(file_mode_value mode)
+{
+    const char* result;
+    switch (mode)
+    {
+        default:
+        case file_mode_read:
+            result = "r";
+            break;
+        case file_mode_write:
+            result = "w";
+            break;
+        case file_mode_append:
+            result = "a";
+            break;
+        case file_mode_read_write:
+            result = "r+";
+            break;
+        case file_mode_write_new:
+            result = "w+";
+            break;
+        case file_mode_read_append:
+            result = "a+";
+            break;
+    }
+    return result;
+}
+
+FILE_MGR_HANDLE file_mgr_open(const char* filename, file_mode_value mode)
 {
     FILE_MGR_INFO* result;
     if ((result = (FILE_MGR_INFO*)malloc(sizeof(FILE_MGR_INFO))) == NULL)
     {
         log_error("Failure allocating file manager info");
     }
-    else if ((result->file = fopen(filename, param)) == NULL)
+    else if ((result->file = fopen(filename, get_file_mode(mode))) == NULL)
     {
         log_error("Failure loading wav %d: %s", errno, filename);
         free(result);

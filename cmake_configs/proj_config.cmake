@@ -98,6 +98,8 @@ macro(set_default_build_options)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Zc:preprocessor /wd5105")
         endif()
 
+        # Disable the invalid windows warning on Release
+        add_compile_options(/wd4706)
 
         # replace other warning levels (just in case - CMake used to add /W3 in previous versions, in 3.18 magically has /W1 for projects) with /W4 (warning level 4)
         string(REGEX REPLACE "/W[1-3]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")

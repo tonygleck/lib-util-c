@@ -53,6 +53,7 @@ jobs:
         run: |
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
+
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
@@ -68,9 +69,8 @@ jobs:
           ninja --version
           cmake --version
           gcc --version
-        # cmd "${{ matrix.config.environment_script }}"
 
-      - name: Configure
+      - name: Configure CMake Command
         shell: bash
         run: |
           mkdir build
@@ -79,10 +79,11 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -Dlib_util_c_ut:bool=ON \
             -DCMAKE_INSTALL_PREFIX:PATH=instdir
-      - name: Build
+
+      - name: Build Project
         shell: bash
         run: cmake --build . --config ${{ matrix.config.build_type }}
 
-      - name: Run test on ${{ matrix.config.name }}
+      - name: Run tests on ${{ matrix.config.name }}
         shell: bash
         run: ctest -C "debug" -V --output-on-failure
